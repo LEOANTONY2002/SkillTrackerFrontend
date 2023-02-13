@@ -1,0 +1,227 @@
+.s-icon {
+  width: 100%;
+  margin: 0px;
+  margin-right: 10vw;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: flex-end;
+}
+.s-icon > p {
+  background-color: #ffebeb;
+  box-shadow: 0 3px 12px #ffb1b14a;
+  padding: 8px 18px;
+  margin-right: -12px;
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
+  color: red;
+  font-weight: bold;
+  font-size: smaller;
+}
+.s-icon > img {
+  width: 25px;
+  padding: 10px;
+  border-radius: 50%;
+  background-color: #ffebeb;
+  box-shadow: 0 3px 12px #ffb1b14a;
+  margin-left: 0;
+}
+.search {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  gap: 10px;
+}
+
+.sh-body {
+  display: flex;
+  align-items: center;
+  background-color: #fff7f7;
+  width: max-content;
+  border-radius: 90px;
+  padding: 10px;
+  padding-right: 30px;
+}
+.sh-body > input {
+  width: 70vw;
+  height: 40px;
+  border-radius: 50px;
+  border: 10px solid #ffecec;
+  text-indent: 20px;
+}
+.sh-body > img {
+  width: 25px;
+  margin-left: -50px;
+  cursor: pointer;
+}
+.sh-filter {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
+  margin-left: 30px;
+}
+.sh-filter > img {
+  width: 20px;
+}
+.sh-filter > span {
+  font-size: smaller;
+}
+.sh-filter > p {
+  padding: 8px 12px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(255, 79, 79, 0.237);
+  cursor: pointer;
+  font-size: smaller;
+  transition: all 0.3s ease-in-out;
+}
+
+.sl-head {
+  display: flex;
+  align-items: center;
+}
+.sl-head img {
+  width: 20px;
+  border-radius: 50%;
+  background-color: #ffe0e0;
+  padding: 5px;
+  margin: 5px;
+  box-shadow: 0 2px 10px rgba(255, 79, 79, 0.237);
+}
+.sl-head > img {
+  background: linear-gradient(120deg, red, #fc3737);
+}
+.sl-head div {
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(255, 170, 170, 0.237);
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  padding: 3px;
+}
+.sl-head div img {
+  cursor: pointer;
+}
+.sl-head p {
+  padding-right: 20px;
+  min-width: 140px;
+  margin-left: 10px;
+}
+.sl-body {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 10px;
+  color: #ffb1b1;
+  max-width: 300px;
+}
+.sl-body p {
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(255, 170, 170, 0.237);
+  width: max-content;
+  border-radius: 5px;
+  margin: 10px;
+}
+.sl-body-p {
+  display: flex;
+  align-items: center;
+}
+.sl-body-p h5 {
+  width: 5px;
+  height: 5px;
+  background-color: red;
+  border-radius: 50%;
+  margin: 0 5px;
+}
+.sl-body-p span {
+  font-size: smaller;
+  color: red;
+}
+.ce-cat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: auto;
+  margin-top: 20px;
+}
+.ce-cat span {
+  padding: 7px;
+  margin: 5px;
+  box-shadow: 0 2px 10px rgba(255, 170, 170, 0.237);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-radius: 5px;
+  color: #fc3737;
+}
+.ce-cat span:hover,
+.sh-filter > p:hover {
+  background-color: #ffe5e5;
+}
+
+.s-emps {
+  width: 70vw;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 50px 0;
+  gap: 20px;
+}
+
+.sem {
+  display: flex;
+  flex-direction: column;
+  width: 30vw;
+}
+.sem-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(255, 170, 170, 0.237);
+  padding: 10px 0;
+  background-color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.sem-head span {
+  margin-left: 10px;
+}
+.sem-head img {
+  width: 20px;
+  margin-right: 10px;
+}
+.sem-body {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 15px;
+}
+.sem-emp {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.sem-emp img {
+  background-color: #ffe0e0;
+  border-radius: 50%;
+}
+.sem-emp p {
+  font-weight: bold;
+}
+.sem-emp span {
+  color: #ffcdcd;
+  font-size: smaller;
+}
+
+@media (max-width: 700px) {
+  .sem {
+    width: 100%;
+  }
+}
