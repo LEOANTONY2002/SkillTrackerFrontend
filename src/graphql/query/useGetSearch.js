@@ -208,3 +208,91 @@ export const useGetSearchEmployeesByCategory = () => {
     const [searchEmployeesByCategory, { loading, data, error }] = useLazyQuery(GET_SEARCH_EMPLOYEES_BY_CATEGORY);
     return { searchEmployeesByCategory, loading, data, error }
 }
+
+const GET_SEARCH_CERTIFICATES = gql`
+        query searchCertificate($word: String!) {
+            searchCertificate(word: $word) {
+                id
+                name
+                photo
+                publisher {
+                    id
+                    name
+                }
+                expiry
+                createdAt
+                updatedAt
+                employeeSkill {
+                    id
+                    employeeId
+                    level
+                    employee {
+                        name
+                        email
+                        photo
+                        id
+                    }
+                    skill {
+                        skill {
+                        name
+                        id
+                        }
+                        category {
+                        name
+                        id
+                        }
+                    }
+                }
+            }
+        }
+    `;
+
+
+export const useGetSearchCertificates = () => {
+    const [searchCertificates, { loading, data, error }] = useLazyQuery(GET_SEARCH_CERTIFICATES);
+    return { searchCertificates, loading, data, error }
+}
+
+const GET_SEARCH_CERTIFICATES_BY_PUBLISHER = gql`
+        query Certificates($word: String!) {
+            searchCertificateByPublisher(word: $word) {
+                id
+                name
+                photo
+                publisher {
+                    id
+                    name
+                }
+                expiry
+                createdAt
+                updatedAt
+                employeeSkill {
+                    id
+                    employeeId
+                    level
+                    employee {
+                        name
+                        email
+                        photo
+                        id
+                    }
+                    skill {
+                        skill {
+                        name
+                        id
+                        }
+                        category {
+                        name
+                        id
+                        }
+                    }
+                }
+            }
+        }
+    `;
+
+
+export const useGetSearchCertificatesByPublisher = () => {
+    const [searchCertificatesByPublisher, { loading, data, error }] = useLazyQuery(GET_SEARCH_CERTIFICATES_BY_PUBLISHER);
+    return { searchCertificatesByPublisher, loading, data, error }
+}

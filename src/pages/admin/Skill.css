@@ -62,14 +62,23 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 15px;
   margin-left: 30px;
 }
 .sh-filter > img {
   width: 20px;
+  margin: 0 10px;
+  padding: 5px;
+  border-radius: 5px;
+  transition: all 0.2s ease-in-out;
+}
+.sh-filter > img:nth-of-type(2):hover,
+.sh-filter > img:nth-of-type(3):hover {
+  background-color: #ffe3e38a;
+  cursor: pointer;
 }
 .sh-filter > span {
   font-size: smaller;
+  margin-right: 15px;
 }
 .sh-filter > p {
   padding: 8px 12px;
@@ -78,6 +87,20 @@
   cursor: pointer;
   font-size: smaller;
   transition: all 0.3s ease-in-out;
+}
+.sh-filter select {
+  width: 80px;
+  margin-left: 15px;
+  border: 0;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(255, 79, 79, 0.237);
+  height: 30px;
+  color: grey;
+  text-indent: 5px;
+  transition: all 0.3s ease-in-out;
+}
+.sh-filter select:focus {
+  color: red;
 }
 
 .sl-head {
@@ -223,5 +246,9 @@
 @media (max-width: 700px) {
   .sem {
     width: 100%;
+  }
+  .sh-filter {
+    width: 100%;
+    margin-left: -15px;
   }
 }

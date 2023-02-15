@@ -1,16 +1,13 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import Error from '../../components/Error'
-import { useAddCategory, useDeleteCategory } from '../../graphql/mutation/useCategory'
-import { useGetSearchCategories } from '../../graphql/query/useGetSearch'
-import { getCategories, getCertificates } from '../../redux/slices/adminSlice'
 import './Category.css'
 import './Certificate.css'
 import Nav from './Nav'
-import ReactApexChart from "react-apexcharts"
-import { useAddPublisher } from '../../graphql/mutation/usePublisher'
+import { useAddPublisher, useDeletePublisher } from '../../graphql/mutation/usePublisher'
 import { useGetAllPublishers } from '../../graphql/query/useGetAllCertificates'
+import { useGetSearchCertificates, useGetSearchCertificatesByPublisher } from '../../graphql/query/useGetSearch'
 
 
 function Certificate() {
@@ -32,10 +29,14 @@ function Certificate() {
         word: "",
         certificates: []
       })
-  const [displayCertificates, setDisplayCertificates] = useState([])
-    const dispatch = useDispatch()
+    const [displayCertificates, setDisplayCertificates] = useState([])
+    const [displayPublishers, setDisplayPublishers] = useState([])
+    const [selectedOptionPublisher, setSelectedOptionPublisher] = useState(null);
     const {addPublisher} = useAddPublisher()
+    const {deletePublisher} = useDeletePublisher()
     const {loading, publishers: publishers=[], error} = useGetAllPublishers()
+    const {searchCertificates} = useGetSearchCertificates()
+    const {searchCertificatesByPublisher} = useGetSearchCertificatesByPublisher()
 
     console.log(displayCertificates)
 
@@ -46,6 +47,13 @@ function Certificate() {
       setErr({open: false, msg: ""})
     }
   }, [certificates])
+
+  useEffect(() => {
+    if (publishers?.length !== 0) {
+      setDisplayPublishers(publishers)
+      setErr({open: false, msg: ""})
+    }
+  }, [publishers])
 
   useEffect(() => {
     if (search.certificates.length !== 0) {
@@ -59,106 +67,76 @@ function Certificate() {
     }
   }, [displayCertificates])
 
+  useEffect(() => {
+    if (selectedOptionPublisher !== null) searchCertificateByPublisher()
+  }, [selectedOptionPublisher])
+
     // Category Functions
     // Upsert
     const upsertPublisher = async () => {
-        let {data} = await addPublisher({
+        let {loading: adding, data, error} = await addPublisher({
             variables: publisher
         })
-        dispatch(getCertificates(data?.addCertificate))
+        error && setErr({
+            open: true,
+            msg: error
+        })
+        setDisplayPublishers(data?.addPublisher)
         setPublisher({open: false, id: '', name: ''})
         setAdd({open: false, name: ''})
     }
 
     // Delete
-    const deleteCat = async (id) => {
-        // const { data } = await deleteCategory({
-        //     variables: {id}
-        // })
-        // dispatch(getCategories(data?.deleteCategory))
-        // setCategory({open: false, id: '', name: ''})
+    const delPublisher = async (id) => {
+        const { loading: deleting, data, error } = await deletePublisher({
+            variables: {id}
+        })
+        setDisplayPublishers(data?.deletePublisher)
+        error && setErr({
+            open: true,
+            msg: error
+        })
     }
 
     // Search
-    // const searchCategory = async () => {
-    //     const {loading, data, error} = await searchCategories({
-    //     variables: {word: search.word}
-    //     })
-    //     setSearch({...search, categories: data?.searchCategory})
-    //     data?.searchCategory?.length === 0 && setErr({
-    //     open: true,
-    //     msg: "No records found!"
-    //     })
-    // }
+    const searchCertificate = async () => {
+        const {loading, data, error} = await searchCertificates({
+        variables: {word: search.word}
+        })
+        setSearch({...search, certificates: data?.searchCertificate})
+        setSelectedOptionPublisher(null)
+        data?.searchCertificate?.length === 0 && setErr({
+        open: true,
+        msg: "No records found!"
+        })
+    }
 
-//   // Ascending
-//   const ascendingCategory = async () => {
-//     let categories = [...displayCertificates]
-//     let ascCategories = categories.sort((a,b) => (a?.name > b?.name) ? 1 : ((b?.name > a?.name) ? -1 : 0))
-//     setDisplayCertificates(ascCategories)
-//   }
+    // Search by Publisher
+    const searchCertificateByPublisher = async () => {
+        const {loading, data, error} = await searchCertificatesByPublisher({
+        variables: {word: selectedOptionPublisher}
+        })
+        setSearch({...search, certificates: data?.searchCertificateByPublisher})
+        data?.searchCertificateByPublisher?.length === 0 && setErr({
+        open: true,
+        msg: "No records found!"
+        })
+    }
 
-//   // Descending
-//   const descendingCategory = async () => {
-//     let categories = [...displayCertificates]
-//     let descCategories = categories.sort((a,b) => (a?.name < b?.name) ? 1 : ((b?.name < a?.name) ? -1 : 0))
-//     setDisplayCertificates(descCategories)
-//   }
+    // Ascending
+    const ascendingCategory = async () => {
+        let certificates = [...displayCertificates]
+        let ascCertificates = certificates.sort((a,b) => (a?.name > b?.name) ? 1 : ((b?.name > a?.name) ? -1 : 0))
+        setDisplayCertificates(ascCertificates)
+    }
 
-//   const chartData = {
-//     series: [{
-//         name: "Skills",
-//         data: [
-//             ...displayCertificates?.map(c => (c?.skills?.length))
-//         ]
-//     }],
-//     options: {
-//       chart: {
-//         height: 150,
-//         type: 'area',
-//         zoom: {
-//           enabled: false
-//         }
-//       },
-//       background: 'white',
-      
-//       dataLabels: {
-//         enabled: false
-//       },
-//       stroke: {
-//         curve: 'smooth'
-//       },
-//       title: {
-//         text: 'Skills on Categories',
-//         align: 'left',
-//         margin: 10,
-//         offsetX: 4,
-//         offsetY: 6,
-//         style: {
-//             fontSize: "10px",
-//             color: 'red',
-//             fontWeight: 'normal'
-//         }
-//       },
-//       colors: ['#ff8888', '#ffb6b6', 'red', 'transparent'],
-//       grid: {
-//         show: false,
-//         row: {
-//             opacity: 0
-//         }
-//       },
-//       xaxis: {
-//         categories: [
-//             ...displayCertificates?.map(c => (c?.name))
-//         ],
-//       },
-//       yaxis: {
-//         min: 1,
-//         forceNiceScale: true,
-//         tickAmount: 2
-//       }
-//     },
-// };
+    // Descending
+    const descendingCategory = async () => {
+        let certificates = [...displayCertificates]
+        let descCertificates = certificates.sort((a,b) => (a?.name < b?.name) ? 1 : ((b?.name < a?.name) ? -1 : 0))
+        setDisplayCertificates(descCertificates)
+    }
+
 
     return (
         <>
@@ -194,30 +172,30 @@ function Certificate() {
                 )}
 
                 <div className="c-list">
-                    {(publishers !== 0) &&
-                       publishers.map(c => (
-                        <div className="cl-cat" key={c?.id}>
+                    {(displayPublishers !== 0) &&
+                       displayPublishers.map(p => (
+                        <div className="cl-cat" key={p?.id}>
                             <div className="cl-head">
-                                <img src="https://img.icons8.com/fluency-systems-filled/48/ffffff/category.png" alt='' />
+                                <img src="https://img.icons8.com/fluency-systems-filled/48/ffffff/certificate.png" alt='' />
                                 <div>
-                                    <p>{c?.name}</p>
+                                    <p>{p?.name}</p>
                                     <img onClick={() => setPublisher({
                                         open: true,
-                                        id: c?.id,
-                                        name: c?.name
+                                        id: p?.id,
+                                        name: p?.name
                                     })} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/pencil.png" alt='' />
-                                    <img onClick={() => deleteCat(c?.id)} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/delete.png" alt='' />
+                                    <img onClick={() => delPublisher(p?.id)} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/delete.png" alt='' />
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
 
-                {/* <div className="search">
+                <div style={{marginTop: "50px"}} className="search">
                     <div className="sh-body">
                         <input type="text" placeholder="Search Categories..." value={search.word} onChange={(e) => setSearch({...search, word: e.target.value})} required />
                         <img
-                            onClick={() => searchCategory()}
+                            onClick={() => searchCertificate()}
                             src="https://img.icons8.com/ios-glyphs/30/fc3737/search.png"
                             alt=""
                         />
@@ -227,15 +205,22 @@ function Certificate() {
                         <span style={{marginLeft: "-10px"}}>Filter:  </span>
                         <p 
                         onClick={() => {
-                            setSearch({...search, word: "", categories: []});
-                            setDisplayCertificates(categories);
+                            setSelectedOptionPublisher(null)
+                            setSearch({...search, word: "", certificates: []});
+                            setDisplayCertificates(certificates);
                         }}
-                        style={displayCertificates === categories ? {backgroundColor: "red", color: "white"} : {}}
+                        style={displayCertificates === certificates ? {backgroundColor: "red", color: "white"} : {}}
                         >All</p>
+                        <select onChange={e => setSelectedOptionPublisher(e.target.value)}>
+                            <option selected={selectedOptionPublisher === null} disabled>Publisher</option>
+                            {
+                            publishers?.map(p => (<option value={p?.name}>{p?.name}</option>))
+                            }
+                        </select>
                         <img onClick={() => ascendingCategory()} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/sort-alpha-up.png" alt=""/>
                         <img onClick={() => descendingCategory()} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/alphabetical-sorting-2.png" alt=""/>
                     </div>
-                </div> */}
+                </div>
 
                 <div className="certificates">
                     {
@@ -256,8 +241,11 @@ function Certificate() {
                                     <img src={ds?.photo} alt="" />
                                 </div>
                                 <div className="ct-cont">
-                                    <p>{ds?.publisher?.name}</p>
-                                    <span>{ds?.expiry}</span>
+                                    <span>{ds?.name}</span>
+                                    <div>
+                                        <p>{ds?.publisher?.name}</p>
+                                        <span>{ds?.expiry}</span>
+                                    </div>
                                 </div>
                             </div>
                         ))

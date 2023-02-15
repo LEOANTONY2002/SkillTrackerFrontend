@@ -253,6 +253,9 @@ input::placeholder {
 }
 
 @media (max-width: 700px) {
+  .category {
+    width: 100%;
+  }
   .ca-inp {
     width: 220px;
   }

@@ -5,33 +5,6 @@ export const ADD_PUBLISHER = gql`
             addPublisher(name: $name, id: $id) {
                 id
                 name
-                # certificates {
-                #     id
-                #     name
-                #     photo
-                #     publisher {
-                #             id
-                #             name
-                #         }
-                #     expiry
-                #     createdAt
-                #     updatedAt
-                #     employeeSkills {
-                #         id
-                #         employeeId
-                #         level
-                #         skill {
-                #             skill {
-                #             name
-                #             id
-                #             }
-                #             category {
-                #             name
-                #             id
-                #             }
-                #         }
-                #     }
-                # }
             }
         }
     `;
@@ -44,42 +17,15 @@ export const useAddPublisher = () => {
 
 export const DELETE_PUBLISHER = gql`
         mutation Mutation($id: String!) {
-            addPublisher(id: $id) {
+            deletePublisher(id: $id) {
                 id
                 name
-                # certificates {
-                #     id
-                #     name
-                #     photo
-                #     publisher {
-                #             id
-                #             name
-                #         }
-                #     expiry
-                #     createdAt
-                #     updatedAt
-                #     employeeSkills {
-                #         id
-                #         employeeId
-                #         level
-                #         skill {
-                #             skill {
-                #             name
-                #             id
-                #             }
-                #             category {
-                #             name
-                #             id
-                #             }
-                #         }
-                #     }
-                # }
             }
         }
     `;
 
 
-export const useADeletePublisher = () => {
+export const useDeletePublisher = () => {
     const [deletePublisher, { loading, data, error }] = useMutation(DELETE_PUBLISHER);
     return { deletePublisher, loading, data, error }
 }

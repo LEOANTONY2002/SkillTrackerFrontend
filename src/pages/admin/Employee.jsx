@@ -33,12 +33,6 @@ function Employee() {
   const {searchEmployeesBySkill} = useGetSearchEmployeesBySkill()
   const [activeIndex, setActiveIndex] = useState(null);
 
-  const content = useRef(null);
-
-  const options = [
-    ...skills?.map(s => ({value: s?.skill?.name, label: s?.skill?.name}))
-  ]
-
   console.log(selectedOption)
 
   // DisplayEmployees and Error corrections
@@ -82,16 +76,17 @@ function Employee() {
       variables: {word: search.word}
     })
     setSearch({...search, employees: data?.searchEmployee})
+    setSelectedOption(null)
     data?.searchEmployee?.length === 0 && setErr({
       open: true,
       msg: "No records found!"
     })
   }
 
-  //search by skill
+  // Search by skill
   const searchEmployeeBySkill = async () => {
     const {loading, data, error} = await searchEmployeesBySkill({
-      variables: {word: selectedOption?.value}
+      variables: {word: selectedOption}
     })
     setSearch({...search, employees: data?.searchEmployeeBySkill})
     data?.searchEmployee?.length === 0 && setErr({
@@ -136,38 +131,18 @@ function Employee() {
             <span style={{marginLeft: "-10px"}}>Filter:  </span>
             <p 
               onClick={() => {
+                setSelectedOption(null)
                 setSearch({...search, word: "", skills: []});
                 setDisplayEmployees(employees);
               }}
               style={displayEmployees === employees ? {backgroundColor: "red", color: "white"} : {}}
               >All</p>
-              <Select
-                value={selectedOption}
-                onChange={setSelectedOption}
-                options={options}
-                placeholder="Skills"
-                styles={{
-                  control: (baseStyles, state) => ({
-                    ...baseStyles,
-                    height: "20px",
-                    borderRadius: "5px",
-                    boxShadow: "0 3px 20px rgba(250, 172, 172, 0.212)"
-                  }),
-                  placeholder: (baseStyles, state) => ({
-                    ...baseStyles,
-                    fontSize: "small"
-                  }),
-                }}
-                theme={(theme) => ({
-                  ...theme,
-                  borderRadius: 0,
-                  colors: {
-                    ...theme.colors,
-                    primary25: 'red',
-                    primary: 'red',
-                  },
-                })}
-              />
+              <select onChange={e => setSelectedOption(e.target.value)}>
+                <option selected={selectedOption === null} disabled>Skills</option>
+                {
+                  skills?.map(s => (<option value={s?.skill?.name}>{s?.skill?.name}</option>))
+                }
+              </select>
               <img onClick={() => ascendingEmployee()} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/sort-alpha-up.png" alt=""/>
               <img onClick={() => descendingEmployee()} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/alphabetical-sorting-2.png" alt=""/>
           </div>

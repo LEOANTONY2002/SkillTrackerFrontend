@@ -62,7 +62,7 @@ function Upload() {
         <>
             <div className="upload">
                 <div className="upl-main">
-                    {user?.employeeSkills?.length !== 0 &&
+                    {user?.employeeSkills?.length !== 0 ?
                         user?.employeeSkills?.map((es) => (
                             <div className="u-main">
                                 <div className="u-skill">
@@ -91,7 +91,11 @@ function Upload() {
                                     </div>
                                 )}
                             </div>
-                        ))}
+                        )) : 
+                        <div>
+                            <p style={{color: "red"}}>No skills found!</p>
+                        </div>
+                        }
 
                     {cert.open && (
                         <div className="u-upl">

@@ -1,8 +1,10 @@
 .certificates {
   display: flex;
   flex-wrap: wrap;
-  width: 90vw;
+  align-items: center;
+  justify-content: center;
   margin-top: 50px;
+  gap: 20px;
 }
 
 .certificate {
@@ -44,16 +46,29 @@
 
 .ct-cont {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   padding: 10px;
   margin-bottom: 20px;
   border-radius: 10px;
   box-shadow: 0 3px 15px rgba(255, 174, 174, 0.265);
+  width: 270px;
 }
-.ct-cont p {
+.ct-cont > span {
+  flex: 0.7;
+  flex-wrap: wrap;
+}
+.ct-cont div {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  flex: 0.3;
+}
+.ct-cont > div > p {
   color: red;
+  text-align: right;
 }
-.ct-cont span {
+.ct-cont > div > span {
   color: rgb(255, 199, 199);
   font-size: smaller;
 }

@@ -187,7 +187,7 @@ function Dashboard() {
                                 <img src="https://img.icons8.com/fluency-systems-filled/48/fc3737/certificate.png" alt=''/>
                                 <div>
                                     <p>Certificates</p>
-                                    <span className='gt'>{skills.length}</span>
+                                    <span className='gt'>{certificates.length}</span>
                                 </div>
                                 <Link to={"/admin/certificate"}>
                                     <img src="https://img.icons8.com/fluency-systems-regular/48/fc3737/forward.png" alt=''/>
