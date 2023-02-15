@@ -5,15 +5,17 @@ import { useDispatch, useSelector } from "react-redux";
 import FileBase64 from "react-file-base64";
 import "./Upload.css";
 import Nav from "../../components/Nav";
-import { useAddCertificate } from "../../graphql/mutation/useAddCertificate";
+import { useAddCertificate } from "../../graphql/mutation/useCertificate";
 import { getUser } from "../../redux/slices/userSlice";
+import { useGetAllPublishers } from "../../graphql/query/useGetAllCertificates";
 
 function Upload() {
     const { user, accessToken } = useSelector((state) => state.user);
     const [cert, setCert] = useState({
         open: false,
+        id: "",
         name: "",
-        publisher: "",
+        publisherId: "",
         expiry: "",
         photo: "",
         employeeId: "",
@@ -30,10 +32,9 @@ function Upload() {
     const dispatch = useDispatch();
     const [shrink, setShrink] = useState(true)
     const {addCertificate} = useAddCertificate()
+    const {loading, publishers: publishers=[], error} = useGetAllPublishers()
 
     console.log(cert);
-
-    
 
     const getFiles = (p) => {
         setCert({ ...cert, photo: p.base64 });
@@ -76,8 +77,8 @@ function Upload() {
                                     <div className="us-body">
                                         <span></span>
                                         <img
-                                            onClick={es?.certificate !== null ? () => setCert({ ...cert, open: true, name: es.certificate.name, expiry: es.certificate.expiry, publisher: es.certificate.publisher, photo: es.certificate.photo, employeeSkillId: es?.id, employeeId: es.employeeId }) : () =>
-                                                setCert({ ...cert, open: true, name: "", expiry: "", publisher: "", photo: "", employeeSkillId: es?.id, employeeId: es.employeeId })
+                                            onClick={es?.certificate !== null ? () => setCert({ ...cert, open: true, id: es.certificate.id, name: es.certificate.name, expiry: es.certificate.expiry, publisherId: es.certificate.publisher.id, photo: es.certificate.photo, employeeSkillId: es?.id, employeeId: es.employeeId }) : () =>
+                                                setCert({ ...cert, open: true, id: "", name: "", expiry: "", publisherId: "", photo: "", employeeSkillId: es?.id, employeeId: es.employeeId })
                                             }
                                             src={es?.certificate !== null ? "https://img.icons8.com/fluency-systems-regular/48/ffffff/pencil.png" : "https://img.icons8.com/fluency-systems-regular/48/ffffff/upload.png"}
                                             alt=""
@@ -129,12 +130,12 @@ function Upload() {
                                     value={cert.name}
                                     onChange={(e) => setCert({ ...cert, name: e.target.value })}
                                 />
-                                <input
-                                    type="text"
-                                    placeholder="Publisher"
-                                    value={cert.publisher}
-                                    onChange={(e) => setCert({ ...cert, publisher: e.target.value })}
-                                />
+                                <select onChange={(e) => setCert({ ...cert, publisherId: e.target.value })}>
+                                    <option selected disabled>Select Publisher</option>
+                                    {publishers.length !== 0 && publishers?.map(p => (
+                                        <option selected={cert.publisherId === p?.id} value={p?.id}>{p?.name}</option>
+                                    ))}
+                                </select>
                                 <p
                                     style={{
                                         textAlign: "left",

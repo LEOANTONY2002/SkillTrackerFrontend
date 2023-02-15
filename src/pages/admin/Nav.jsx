@@ -29,6 +29,10 @@ function Nav() {
                     <img src="https://img.icons8.com/material-outlined/48/ffffff/light-on--v1.png" alt='' />
                     <p>Skills</p>
                 </div>
+                <div onClick={() => navigate('/admin/certificate')}>
+                    <img src="https://img.icons8.com/fluency-systems-regular/48/ffffff/certificate.png" alt='' />
+                    <p>Certificates</p>
+                </div>
             </div>
         </div>
     )

@@ -7,7 +7,7 @@ import { store } from './redux/store'
 import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
 
 const client = new ApolloClient({
-  uri: 'https://mix-birthday.codedamn.app:1337/',
+  uri: 'http://localhost:4000',
   cache: new InMemoryCache(),
 });
 

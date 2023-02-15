@@ -19,7 +19,10 @@ export const ADD_CATEGORY = gql`
                 }
                 certificate {
                 name
-                publisher
+                publisher {
+                    id
+                    name
+                }
                 }
             }
             }
@@ -47,7 +50,10 @@ export const DELETE_CATEGORY = gql`
                 }
                 certificate {
                 name
-                publisher
+                publisher {
+                    id
+                    name
+                }
                 }
             }
             }

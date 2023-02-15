@@ -23,7 +23,10 @@ const GET_ALL_SKILLS = gql`
                 }
                 certificate {
                     name
-                    publisher
+                    publisher {
+                            id
+                            name
+                        }
                     expiry
                 }
                 }

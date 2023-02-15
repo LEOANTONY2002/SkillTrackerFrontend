@@ -27,7 +27,10 @@ const LOGIN = gql`
                         id
                         name
                         photo
-                        publisher
+                        publisher {
+                            id
+                            name
+                        }
                         expiry
                         createdAt
                         updatedAt

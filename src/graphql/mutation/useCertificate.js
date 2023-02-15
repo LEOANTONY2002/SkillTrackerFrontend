@@ -1,8 +1,8 @@
 import { gql, useMutation } from "@apollo/client";
 
 export const ADD_CERTIFICATE = gql`
-        mutation Mutation($name: String!, $publisher: String!, $photo: String!, $id: String, $expiry: String, $employeeSkillId: String, $employeeId: String) {
-            addCertificate(name: $name, publisher: $publisher, photo: $photo, id: $id, expiry: $expiry, employeeSkillId: $employeeSkillId, employeeId: $employeeId) {
+        mutation Mutation($name: String!, $publisherId: String!, $photo: String!, $id: String, $expiry: String, $employeeSkillId: String!, $employeeId: String!) {
+            addCertificate(name: $name, publisherId: $publisherId, photo: $photo, id: $id, expiry: $expiry, employeeSkillId: $employeeSkillId, employeeId: $employeeId) {
                 id
                 name
                 email
@@ -25,7 +25,11 @@ export const ADD_CERTIFICATE = gql`
                         id
                         name
                         photo
-                        publisher
+                        publisherId
+                        publisher {
+                            id
+                            name
+                        }
                         expiry
                         createdAt
                         updatedAt

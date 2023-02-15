@@ -5,7 +5,8 @@ const slice = createSlice({
     initialState: {
         employees: [],
         skills: [],
-        categories: []
+        categories: [],
+        certificates: []
     },
     reducers: {
         getEmployees: (state, action) => {
@@ -16,10 +17,13 @@ const slice = createSlice({
         },
         getCategories: (state, action) => {
             state.categories = action.payload
+        },
+        getCertificates: (state, action) => {
+            state.certificates = action.payload
         }
     },
 });
 
-export const { getEmployees, getSkills, getCategories } = slice.actions
+export const { getEmployees, getSkills, getCategories, getCertificates } = slice.actions
 
 export default slice.reducer

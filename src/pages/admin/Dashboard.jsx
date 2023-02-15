@@ -8,8 +8,9 @@ import { useGetAllCategories } from '../../graphql/query/useGetAllCategories'
 import { Link, useNavigate } from 'react-router-dom'
 import Nav from './Nav'
 import ReactApexChart from "react-apexcharts"
-import { getCategories, getEmployees, getSkills } from '../../redux/slices/adminSlice'
+import { getCategories, getCertificates, getEmployees, getSkills } from '../../redux/slices/adminSlice'
 import loader from '../../assets/loader.svg'
+import { useGetAllCertificates } from '../../graphql/query/useGetAllCertificates'
 
 function Dashboard() {
 
@@ -19,6 +20,7 @@ function Dashboard() {
     const {loading: gettingEmployees, employees: employees=[], error: errorEmployees} = useGetAllEmployees()
     const {loading: gettingSkills, skills: skills=[], error: errorSkills} = useGetAllSkills()
     const {loading: gettingCategories, categories: categories=[], error: errorCategories} = useGetAllCategories()
+    const {loading: gettingCertificates, certificates: certificates=[], error: errorCertificates} = useGetAllCertificates()
 
     console.log(categories)
 
@@ -33,8 +35,11 @@ function Dashboard() {
         if (admin.employees.length === 0) {
             dispatch(getEmployees(employees))
         }
+        if (admin.certificates.length === 0) {
+            dispatch(getCertificates(certificates))
+        }
         console.log("done", admin)
-    }, [gettingCategories, getEmployees, gettingSkills])
+    }, [gettingCategories, getEmployees, gettingSkills, gettingCertificates])
 
     const chartData = {
         series: [{
@@ -178,6 +183,16 @@ function Dashboard() {
                                     <img src="https://img.icons8.com/fluency-systems-regular/48/fc3737/forward.png" alt=''/>
                                 </Link>
                             </div>
+                            <div>
+                                <img src="https://img.icons8.com/fluency-systems-filled/48/fc3737/certificate.png" alt=''/>
+                                <div>
+                                    <p>Certificates</p>
+                                    <span className='gt'>{skills.length}</span>
+                                </div>
+                                <Link to={"/admin/certificate"}>
+                                    <img src="https://img.icons8.com/fluency-systems-regular/48/fc3737/forward.png" alt=''/>
+                                </Link>
+                            </div>
                         </div>
                         {/* <div className="chart">
                             <div className='ad-head'>
@@ -199,7 +214,7 @@ function Dashboard() {
                         </div>
                         <p style={{marginTop: "40px", marginLeft: "20px", color: "red"}}>Skills on Employees</p>
                         <div style={{width: "100%", display: "flex", flexWrap: "wrap"}}>
-                            <div className='contents dc-cont'>
+                            <div className='dc-cont'>
                                 {skills ? skills.map(s => (
                                     <div key={s?.id} className="sk-body">
                                         <img src="https://img.icons8.com/fluency-systems-regular/48/fc3737/light-on--v1.png" alt=''/>

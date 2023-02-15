@@ -12,6 +12,7 @@ import Skill from './pages/admin/Skill';
 import Category from './pages/admin/Category';
 import Dashboard from './pages/admin/Dashboard';
 import Nav from './pages/admin/Nav';
+import Certificate from './pages/admin/Certificate';
 
 function App() {
   const { user } = useSelector((state) => state.user)
@@ -27,6 +28,7 @@ function App() {
             : <Route path='/employee/login' element={<Login />} />
           } */}
           <Route path='/' element={<Home />} />
+          <Route path='/admin/certificate' element={<Certificate />} />
           <Route path='/admin/employee' element={<Employee />} />
           <Route path='/admin/skill' element={<Skill />} />
           <Route path='/admin/category' element={<Category />} />

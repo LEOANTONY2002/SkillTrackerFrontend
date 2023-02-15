@@ -13,11 +13,12 @@ const GET_ALL_EMPLOYEES = gql`
                 certificate {
                     id
                     name
-                    publisher
+                    publisher {
+                        id
+                        name
+                    }
                     expiry
                     photo
-                    employeeSkillId
-                    updateLog
                     createdAt
                     updatedAt
                 }

@@ -1,0 +1,59 @@
+.certificates {
+  display: flex;
+  flex-wrap: wrap;
+  width: 90vw;
+  margin-top: 50px;
+}
+
+.certificate {
+  display: flex;
+  flex-direction: column;
+}
+.ct-emp {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.ct-emp img {
+  background: linear-gradient(120deg, rgb(255, 45, 45), #ff815a);
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  box-shadow: 0 2px 10px rgba(255, 129, 129, 0.413);
+  border-radius: 50%;
+}
+.ct-emp div {
+  display: flex;
+  flex-direction: column;
+}
+.ct-emp span {
+  font-size: smaller;
+  color: #ffc7b6;
+}
+
+.ct-img {
+  background-color: #ffe3dba4;
+  padding: 20px;
+  border-radius: 20px;
+  margin: 15px 0;
+}
+.ct-img img {
+  width: 250px;
+  box-shadow: 0 3px 15px rgba(154, 154, 154, 0.265);
+}
+
+.ct-cont {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 3px 15px rgba(255, 174, 174, 0.265);
+}
+.ct-cont p {
+  color: red;
+}
+.ct-cont span {
+  color: rgb(255, 199, 199);
+  font-size: smaller;
+}

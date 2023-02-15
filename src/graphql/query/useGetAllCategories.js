@@ -19,7 +19,10 @@ const GET_ALL_CATEGORIES = gql`
                     }
                     certificate {
                     name
-                    publisher
+                    publisher {
+                        id
+                        name
+                    }
                     }
                 }
                 }

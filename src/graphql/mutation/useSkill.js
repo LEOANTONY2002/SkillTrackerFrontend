@@ -23,7 +23,10 @@ export const ADD_SKILL = gql`
                 }
                 certificate {
                     name
-                    publisher
+                    publisher {
+                            id
+                            name
+                        }
                     expiry
                 }
             }
@@ -54,7 +57,10 @@ export const UPDATE_SKILL = gql`
                 }
                 certificate {
                     name
-                    publisher
+                    publisher {
+                            id
+                            name
+                        }
                     expiry
                 }
             }
@@ -86,7 +92,10 @@ export const DELETE_SKILL = gql`
                 }
                 certificate {
                     name
-                    publisher
+                    publisher {
+                            id
+                            name
+                        }
                     expiry
                 }
             }

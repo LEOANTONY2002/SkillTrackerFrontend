@@ -22,7 +22,10 @@ const GET_SEARCH_SKILLS = gql`
                 }
                 certificate {
                     name
-                    publisher
+                    publisher {
+                            id
+                            name
+                        }
                     expiry
                 }
                 }
@@ -56,7 +59,10 @@ const GET_SEARCH_CATEGORIES = gql`
                     }
                     certificate {
                     name
-                    publisher
+                    publisher {
+                            id
+                            name
+                        }
                     }
                 }
                 }
@@ -95,7 +101,10 @@ const GET_SEARCH_EMPLOYEES = gql`
                     id
                     name
                     photo
-                    publisher
+                    publisher {
+                            id
+                            name
+                        }
                     expiry
                     createdAt
                     updatedAt
@@ -136,7 +145,10 @@ const GET_SEARCH_EMPLOYEES_BY_SKILL = gql`
                     id
                     name
                     photo
-                    publisher
+                    publisher {
+                            id
+                            name
+                        }
                     expiry
                     createdAt
                     updatedAt
@@ -177,7 +189,10 @@ const GET_SEARCH_EMPLOYEES_BY_CATEGORY = gql`
                     id
                     name
                     photo
-                    publisher
+                    publisher {
+                            id
+                            name
+                        }
                     expiry
                     createdAt
                     updatedAt

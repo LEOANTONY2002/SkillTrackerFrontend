@@ -15,10 +15,10 @@
   margin-bottom: 50px !important;
 }
 .contents {
-  width: calc(100% - 350px);
   margin-top: 20px !important;
 }
 .dm-cont {
+  width: 100%;
   display: flex;
   justify-content: space-evenly;
   flex-wrap: wrap;
@@ -181,6 +181,7 @@
   align-items: center;
   justify-content: space-evenly;
   flex-wrap: wrap;
+  width: calc(100% - 350px);
 }
 .dc-cont > div {
   display: flex;
@@ -242,7 +243,8 @@
     justify-content: center;
     flex-direction: column;
   }
-  .dm-cont {
+  .dm-cont,
+  .dc-cont {
     width: 100vw;
   }
   .d-left {

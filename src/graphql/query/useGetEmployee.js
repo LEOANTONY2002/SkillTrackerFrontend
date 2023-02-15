@@ -24,7 +24,10 @@ const GET_EMPLOYEE = gql`
                     id
                     name
                     photo
-                    publisher
+                    publisher {
+                            id
+                            name
+                        }
                     expiry
                     createdAt
                     updatedAt
