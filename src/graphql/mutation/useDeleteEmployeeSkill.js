@@ -3,17 +3,25 @@ import { gql, useMutation } from "@apollo/client";
 const DELETE_EMPLOYEE_SKILL = gql`
         mutation DeleteEmployeeSkill($employeeId: String!, $eskillId: String!) {
             deleteEmployeeSkill(employeeId: $employeeId, eskillId: $eskillId) {
-                email
                 id
-                isManager
+                email
                 name
                 photo
-                role
+                jobTitle
+                displayName
+                mobileNumber
+                department
+                isAdmin
+                isNewEmployee
+                division
+                location
                 employeeSkills {
                     id
                     employeeId
                     level
+                    skillId
                     skill {
+                        id
                         skill {
                         name
                         id
@@ -23,6 +31,7 @@ const DELETE_EMPLOYEE_SKILL = gql`
                         id
                         }
                     }
+                    updatedAt
                     certificate {
                         id
                         name

@@ -4,16 +4,24 @@ const LOGIN = gql`
         mutation AddEmployee($name: String!, $email: String!, $password: String!) {
             addEmployee(name: $name, email: $email, password: $password) {
                 id
-                name
                 email
+                name
                 photo
-                role
-                isManager
+                jobTitle
+                displayName
+                mobileNumber
+                department
+                isAdmin
+                isNewEmployee
+                division
+                location
                 employeeSkills {
                     id
                     employeeId
                     level
+                    skillId
                     skill {
+                        id
                         skill {
                         name
                         id

@@ -18,10 +18,18 @@ const GET_ALL_CERTIFICATES = gql`
                     employeeId
                     level
                     employee {
-                        name
-                        email
-                        photo
                         id
+                        email
+                        name
+                        photo
+                        jobTitle
+                        displayName
+                        mobileNumber
+                        department
+                        isAdmin
+                        isNewEmployee
+                        division
+                        location
                     }
                     skill {
                         skill {

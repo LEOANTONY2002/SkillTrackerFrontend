@@ -17,9 +17,18 @@ export const ADD_SKILL = gql`
                 id
                 level
                 employee {
-                    name
+                    id
                     email
-                    role
+                    name
+                    photo
+                    jobTitle
+                    displayName
+                    mobileNumber
+                    department
+                    isAdmin
+                    isNewEmployee
+                    division
+                    location
                 }
                 certificate {
                     name
@@ -51,9 +60,18 @@ export const UPDATE_SKILL = gql`
                 id
                 level
                 employee {
-                    name
+                    id
                     email
-                    role
+                    name
+                    photo
+                    jobTitle
+                    displayName
+                    mobileNumber
+                    department
+                    isAdmin
+                    isNewEmployee
+                    division
+                    location
                 }
                 certificate {
                     name
@@ -86,9 +104,18 @@ export const DELETE_SKILL = gql`
                 id
                 level
                 employee {
-                    name
+                    id
                     email
-                    role
+                    name
+                    photo
+                    jobTitle
+                    displayName
+                    mobileNumber
+                    department
+                    isAdmin
+                    isNewEmployee
+                    division
+                    location
                 }
                 certificate {
                     name

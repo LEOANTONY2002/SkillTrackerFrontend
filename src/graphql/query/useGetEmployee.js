@@ -6,11 +6,13 @@ const GET_EMPLOYEE = gql`
                 email
                 name
                 photo
-                role
+                jobTitle
                 id
+                
                 employeeSkills {
                 level
                 skill {
+                    id
                     skill {
                     name
                     id
@@ -41,4 +43,21 @@ const GET_EMPLOYEE = gql`
 export const useGetEmployee = () => {
     const [getEmployee, { loading, data, error }] = useLazyQuery(GET_EMPLOYEE);
     return { getEmployee, loading, data, error }
+}
+
+const GET_LAST_SYNC = gql`
+        query LastSync {
+            lastSync {
+                id
+                lastSync
+                updatedAt
+                createdAt
+            }
+        }
+    `;
+
+
+export const useGetLastSync = () => {
+    const [getLastSync, { loading, data, error }] = useLazyQuery(GET_LAST_SYNC);
+    return { getLastSync, loading, data, error }
 }

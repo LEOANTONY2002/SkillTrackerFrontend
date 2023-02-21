@@ -4,6 +4,17 @@
   place-content: center;
   position: fixed;
   bottom: 0;
+  animation: fade 3s forwards;
+  z-index: 100;
+}
+
+@keyframes fade {
+  from {
+    display: flex;
+  }
+  to {
+    display: none;
+  }
 }
 
 .error {

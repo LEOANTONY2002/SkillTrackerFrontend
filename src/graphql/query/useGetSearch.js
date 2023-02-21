@@ -18,7 +18,7 @@ const GET_SEARCH_SKILLS = gql`
                 employee {
                     name
                     email
-                    role
+                    jobTitle
                 }
                 certificate {
                     name
@@ -80,11 +80,18 @@ export const useGetSearchCategories = () => {
 const GET_SEARCH_EMPLOYEES = gql`
         query SearchEmployee($word: String!) {
             searchEmployee(word: $word) {
+                id
                 email
                 name
                 photo
-                role
-                id
+                jobTitle
+                displayName
+                mobileNumber
+                department
+                isAdmin
+                isNewEmployee
+                division
+                location
                 employeeSkills {
                 level
                 skill {
@@ -124,11 +131,18 @@ export const useGetSearchEmployees = () => {
 const GET_SEARCH_EMPLOYEES_BY_SKILL = gql`
         query SearchEmployeeBySkill($word: String!) {
             searchEmployeeBySkill(word: $word) {
+                id
                 email
                 name
                 photo
-                role
-                id
+                jobTitle
+                displayName
+                mobileNumber
+                department
+                isAdmin
+                isNewEmployee
+                division
+                location
                 employeeSkills {
                 level
                 skill {
@@ -168,11 +182,18 @@ export const useGetSearchEmployeesBySkill = () => {
 const GET_SEARCH_EMPLOYEES_BY_CATEGORY = gql`
         query SearchEmployeeByCategory($word: String!) {
             searchEmployeeByCategory(word: $word) {
+                id
                 email
                 name
                 photo
-                role
-                id
+                jobTitle
+                displayName
+                mobileNumber
+                department
+                isAdmin
+                isNewEmployee
+                division
+                location
                 employeeSkills {
                 level
                 skill {

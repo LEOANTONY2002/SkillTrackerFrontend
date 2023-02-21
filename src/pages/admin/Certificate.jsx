@@ -1,17 +1,18 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
 import Error from '../../components/Error'
 import './Category.css'
 import './Certificate.css'
 import Nav from './Nav'
+import spinner from '../../assets/spinner.gif'
+import loader from '../../assets/loader.svg'
 import { useAddPublisher, useDeletePublisher } from '../../graphql/mutation/usePublisher'
-import { useGetAllPublishers } from '../../graphql/query/useGetAllCertificates'
+import { useGetAllCertificates, useGetAllPublishers } from '../../graphql/query/useGetAllCertificates'
 import { useGetSearchCertificates, useGetSearchCertificatesByPublisher } from '../../graphql/query/useGetSearch'
 
 
 function Certificate() {
-    const { certificates } = useSelector((state) => state.admin)
+    // const { certificates } = useSelector((state) => state.admin)
     const [publisher, setPublisher] = useState({
         open: false,
         id: '',
@@ -29,14 +30,20 @@ function Certificate() {
         word: "",
         certificates: []
       })
+      const [zoom, setZoom] = useState({
+        open: false,
+        cert: {}
+    })
+    const [load, setLoading] = useState(false)
     const [displayCertificates, setDisplayCertificates] = useState([])
     const [displayPublishers, setDisplayPublishers] = useState([])
     const [selectedOptionPublisher, setSelectedOptionPublisher] = useState(null);
     const {addPublisher} = useAddPublisher()
     const {deletePublisher} = useDeletePublisher()
-    const {loading, publishers: publishers=[], error} = useGetAllPublishers()
-    const {searchCertificates} = useGetSearchCertificates()
-    const {searchCertificatesByPublisher} = useGetSearchCertificatesByPublisher()
+    const {loading: gettingPublishers, publishers: publishers=[], error} = useGetAllPublishers()
+    const {loading: gettingCertificates, certificates: certificates=[], error: errorCertificates} = useGetAllCertificates()
+    const {searchCertificates, loading: searchingCertificate} = useGetSearchCertificates()
+    const {searchCertificatesByPublisher, loading: searchingCertificateByPublisher} = useGetSearchCertificatesByPublisher()
 
     console.log(displayCertificates)
 
@@ -74,16 +81,31 @@ function Certificate() {
     // Category Functions
     // Upsert
     const upsertPublisher = async () => {
-        let {loading: adding, data, error} = await addPublisher({
-            variables: publisher
-        })
-        error && setErr({
-            open: true,
-            msg: error
-        })
-        setDisplayPublishers(data?.addPublisher)
-        setPublisher({open: false, id: '', name: ''})
-        setAdd({open: false, name: ''})
+        if (publisher.name !== "") {
+            let {loading: adding, data, errors} = await addPublisher({
+                variables: publisher
+            })
+            adding && setLoading(true)
+            if(errors) { 
+                setLoading(false)
+                setErr({
+                    open: true,
+                    msg: errors
+                })
+            }
+            if (data?.addPublisher?.length !== 0) {
+                setLoading(false)
+                setDisplayPublishers(data?.addPublisher)
+                setPublisher({open: false, id: '', name: ''})
+                setAdd({open: false, name: ''})
+            }
+        } else {
+            setErr({
+                open: true,
+                msg: "Enter a publisher name"
+            })
+            setLoading(false)
+        }
     }
 
     // Delete
@@ -103,12 +125,13 @@ function Certificate() {
         const {loading, data, error} = await searchCertificates({
         variables: {word: search.word}
         })
-        setSearch({...search, certificates: data?.searchCertificate})
-        setSelectedOptionPublisher(null)
-        data?.searchCertificate?.length === 0 && setErr({
-        open: true,
-        msg: "No records found!"
-        })
+        
+        if (data?.searchCertificate?.length === 0) {
+            setSelectedOptionPublisher(null)
+            setDisplayCertificates([])
+        } else {
+            setSearch({...search, certificates: data?.searchCertificate})
+        }
     }
 
     // Search by Publisher
@@ -116,11 +139,12 @@ function Certificate() {
         const {loading, data, error} = await searchCertificatesByPublisher({
         variables: {word: selectedOptionPublisher}
         })
-        setSearch({...search, certificates: data?.searchCertificateByPublisher})
-        data?.searchCertificateByPublisher?.length === 0 && setErr({
-        open: true,
-        msg: "No records found!"
-        })
+        if (data?.searchCertificateByPublisher?.length === 0) {
+            setSelectedOptionPublisher(null)
+            setDisplayCertificates([])
+        } else {
+            setSearch({...search, certificates: data?.searchCertificateByPublisher})
+        }
     }
 
     // Ascending
@@ -141,18 +165,21 @@ function Certificate() {
     return (
         <>
             <div className='category'>
-                <div className="c-title">
-                    <p>Publishers</p>
-                    <span></span>
-                </div>
-                <div className="s-icon" onClick={() => setAdd({open: true})}>
-                    <p>Add New</p>
-                    <img
-                        className="sIcon"
-                        src="https://img.icons8.com/ios-glyphs/50/fc3737/plus-math.png"
-                        alt=""
-                    />
-                </div>
+              {gettingPublishers ? <div style={{height: "200px", display: "grid", placeContent: "center"}}><img style={{width: "40px"}} src={loader} alt=''/></div> :
+                <>
+                    <div className="c-title">
+                        <p>Publishers</p>
+                        <span></span>
+                    </div>
+                    <div className="s-icon" onClick={() => setAdd({open: true})}>
+                        <p>Add New</p>
+                        <img
+                            className="sIcon"
+                            src="https://img.icons8.com/ios-glyphs/50/fc3737/plus-math.png"
+                            alt=""
+                        />
+                    </div>
+                
                 
                 {add.open && (
                     <div className="add">
@@ -164,9 +191,10 @@ function Certificate() {
                             />
                             <p>Publisher</p>
                             <div className="ca-inp">
-                                <input type="text" placeholder='New Category' value={publisher.name} onChange={e => setPublisher({...publisher, name: e.target.value})} />
+                                <input type="text" onKeyDown={e => e.key === 'Enter' && upsertPublisher()} placeholder='New Category' value={publisher.name} onChange={e => setPublisher({...publisher, name: e.target.value})} />
                                 <img onClick={() => upsertPublisher()} src="https://img.icons8.com/ios-glyphs/30/ffffff/plus-math.png" alt='' />
                             </div>
+                            {load && <div><img style={{width: "30px"}} src={spinner} alt=''/></div>}
                         </div>
                     </div>
                 )}
@@ -191,9 +219,12 @@ function Certificate() {
                     ))}
                 </div>
 
+                </>
+                }
+
                 <div style={{marginTop: "50px"}} className="search">
                     <div className="sh-body">
-                        <input type="text" placeholder="Search Categories..." value={search.word} onChange={(e) => setSearch({...search, word: e.target.value})} required />
+                        <input type="text" onKeyDown={e => e.key === 'Enter' && searchCertificate()} placeholder="Search Categories..." value={search.word} onChange={(e) => setSearch({...search, word: e.target.value})} required />
                         <img
                             onClick={() => searchCertificate()}
                             src="https://img.icons8.com/ios-glyphs/30/fc3737/search.png"
@@ -222,35 +253,37 @@ function Certificate() {
                     </div>
                 </div>
 
-                <div className="certificates">
-                    {
-                        displayCertificates.length !== 0 && displayCertificates?.map(ds => (
-                            <div className="certificate">
-                                <div className="ct-emp">
-                                    <img style={
-                                            ds?.employeeSkill?.employee?.photo
-                                            ? { padding: "0px", width: "40px", height: "40px" }
-                                            : { padding: "10px" }
-                                        } src={ds?.employeeSkill?.employee?.photo ? ds?.employeeSkill?.employee?.img : "https://img.icons8.com/fluency-systems-filled/90/ffffff/collaborator-male.png"} alt="" />
-                                    <div>
-                                        <p>{ds?.employeeSkill?.employee?.name}</p>
-                                        <span>{ds?.employeeSkill?.employee?.email}</span>
+            
+                {gettingCertificates || searchingCertificate || searchingCertificateByPublisher ? <div style={{height: "50vh", display: "grid", placeContent: "center"}}><img style={{width: "40px"}} src={loader} alt=''/></div> :
+                    displayCertificates.length !== 0 ? 
+                        <div className="certificates">
+                            {displayCertificates?.map(ds => (
+                                <div className="certificate">
+                                    <div className="ct-emp">
+                                        <img style={
+                                                ds?.employeeSkill?.employee?.photo === ""
+                                                ? { padding: "10px", width: "40px", height: "40px" }
+                                                : { padding: "0px" }
+                                            } src={ds?.employeeSkill?.employee?.photo !== "" ? ds?.employeeSkill?.employee?.photo : "https://img.icons8.com/fluency-systems-filled/90/ffffff/collaborator-male.png"} alt="" />
+                                        <div>
+                                            <p>{ds?.employeeSkill?.employee?.name}</p>
+                                            <span>{ds?.employeeSkill?.employee?.email}</span>
+                                        </div>
+                                    </div>
+                                    <div className="ct-img">
+                                        <img onClick={() => setZoom({open: true, cert: ds})} src={ds?.photo} alt="" />
+                                    </div>
+                                    <div className="ct-cont">
+                                        <span>{ds?.name}</span>
+                                        <div>
+                                            <p>{ds?.publisher?.name}</p>
+                                            <span>{ds?.expiry}</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="ct-img">
-                                    <img src={ds?.photo} alt="" />
-                                </div>
-                                <div className="ct-cont">
-                                    <span>{ds?.name}</span>
-                                    <div>
-                                        <p>{ds?.publisher?.name}</p>
-                                        <span>{ds?.expiry}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))
-                    }
-                </div>
+                            ))
+                            }
+                        </div> : <p style={{color: "red", marginTop: "30px"}}>No records found!</p>}
             </div>
             {publisher.open && (
                 <div className='c-edit'>
@@ -263,9 +296,33 @@ function Certificate() {
                         <div className="ce-body">
                             <p>{publisher.name}</p>
                             <input type="text" placeholder='Category' value={publisher.name} onChange={e => setPublisher({ ...publisher, name: e.target.value })} />
+                            {load && <div><img style={{width: "30px"}} src={spinner} alt=''/></div>}
                             <button onClick={() => upsertPublisher()}>Update</button>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {zoom.open && (
+                <div className="zoom">
+                <img
+                    onClick={() => {
+                    setZoom({ open: false, cert: {} });
+                    }}
+                    src="https://img.icons8.com/ios/48/fc3737/delete-sign--v1.png"
+                    alt=""
+                />
+                <div className="z-cert">
+                    <div className="zc-title">
+                    <p>{zoom.cert?.name}</p>
+                    <span>{zoom.cert?.publisher?.name}</span>
+                    </div>
+                    <img src={zoom.cert?.photo} alt="" />
+                    <div className="zc-exp">
+                    <p>expiry</p>
+                    <span>{zoom.cert?.expiry}</span>
+                    </div>
+                </div>
                 </div>
             )}
 

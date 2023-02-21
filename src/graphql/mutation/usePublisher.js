@@ -1,7 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 
 export const ADD_PUBLISHER = gql`
-        mutation Mutation($name: String!, $id: String!,) {
+        mutation Mutation($name: String!, $id: String!) {
             addPublisher(name: $name, id: $id) {
                 id
                 name

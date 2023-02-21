@@ -17,9 +17,18 @@ const GET_ALL_SKILLS = gql`
                 id
                 level
                 employee {
-                    name
+                    id
                     email
-                    role
+                    name
+                    photo
+                    jobTitle
+                    displayName
+                    mobileNumber
+                    department
+                    isAdmin
+                    isNewEmployee
+                    division
+                    location
                 }
                 certificate {
                     name

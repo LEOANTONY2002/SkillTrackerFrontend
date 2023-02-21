@@ -8,34 +8,38 @@ import { getCategories } from '../../redux/slices/adminSlice'
 import './Category.css'
 import Nav from './Nav'
 import ReactApexChart from "react-apexcharts"
+import loader from '../../assets/loader.svg'
+import spinner from '../../assets/spinner.gif'
+import { useGetAllCategories } from '../../graphql/query/useGetAllCategories'
 
 
 function Category() {
-    const { categories } = useSelector((state) => state.admin)
-    const [category, setCategory] = useState({
-        open: false,
-        id: '',
-        name: ''
-    })
-    const [add, setAdd] = useState({
-        open: false,
-        name: "",
-      })
-      const [err, setErr] = useState({
-        open: false,
-        msg: "",
-      });
-      const [search, setSearch] = useState({
-        word: "",
-        categories: []
-      })
+  const [category, setCategory] = useState({
+      open: false,
+      id: '',
+      name: ''
+  })
+  const [add, setAdd] = useState({
+    open: false,
+    name: "",
+  })
+  const [err, setErr] = useState({
+    open: false,
+    msg: "",
+  });
+  const [search, setSearch] = useState({
+    word: "",
+    categories: []
+  })
+  const [load, setLoading] = useState(false)
   const [displayCategories, setDisplayCategories] = useState([])
-    const dispatch = useDispatch()
-    const {addCategory} = useAddCategory()
-    const {deleteCategory} = useDeleteCategory()
-  const {searchCategories} = useGetSearchCategories()
+  const dispatch = useDispatch()
+  const {loading: gettingCategories, categories=[], error: errorCategories} = useGetAllCategories()
+  const {addCategory, loading: addingCategory} = useAddCategory()
+  const {deleteCategory, loading: deletingCategory} = useDeleteCategory()
+  const {searchCategories, loading: searchingCategory} = useGetSearchCategories()
 
-    console.log(categories)
+  console.log(categories)
 
     // DisplaySkills and Error corrections
   useEffect(() => {
@@ -59,34 +63,68 @@ function Category() {
 
     // Category Functions
     // Upsert
-    const upsertCategory = async () => {
-        let {data} = await addCategory({
-            variables: category
-        })
+  const upsertCategory = async () => {
+    if (category.name !== "") {
+      let {data} = await addCategory({
+          variables: category
+      })
+      if (addingCategory) setLoading(true)
+      if (data?.addCategory?.length !== 0) {
+        setLoading(false)
         dispatch(getCategories(data?.addCategory))
         setCategory({open: false, id: '', name: ''})
         setAdd({open: false, name: ''})
+      } else {
+        setLoading(false)
+      }
+    } else {
+      setErr({
+        open: true,
+        msg: "Enter category name!"
+      })
     }
+  }
 
-    // Delete
-    const deleteCat = async (id) => {
-        const { data } = await deleteCategory({
-            variables: {id}
-        })
+  // Delete
+  const deleteCat = async (id) => {
+      const { data } = await deleteCategory({
+          variables: {id}
+      })
+      if (deletingCategory) setLoading(true)
+      if (data?.deleteCategory !== 0) {
+        setLoading(false)
         dispatch(getCategories(data?.deleteCategory))
         setCategory({open: false, id: '', name: ''})
+      } else {
+        setLoading(false)
+        setErr({
+          open: true,
+          msg: "Something went wrong!"
+        })
+      }
+  }
+
+  // Search
+  const searchCategory = async () => {
+    if (search.word !== "") {
+      const {data} = await searchCategories({
+        variables: {word: search.word}
+      })
+      if (searchingCategory) setLoading(true)
+      if (data?.searchCategory?.length === 0) { 
+        setLoading(false)
+        setDisplayCategories([])
+      } else {
+        setLoading(false)
+        setSearch({...search, categories: data?.searchCategory})
+      }
+    } else {
+      setErr({
+        open: true,
+        msg: "Enter search field!"
+      })
     }
 
-    // Search
-  const searchCategory = async () => {
-    const {loading, data, error} = await searchCategories({
-      variables: {word: search.word}
-    })
-    setSearch({...search, categories: data?.searchCategory})
-    data?.searchCategory?.length === 0 && setErr({
-      open: true,
-      msg: "No records found!"
-    })
   }
 
   // Ascending
@@ -149,17 +187,24 @@ function Category() {
         categories: [
             ...displayCategories?.map(c => (c?.name))
         ],
+        labels: {
+          hideOverlappingLabels: true,
+        }
       },
       yaxis: {
         min: 1,
         forceNiceScale: true,
-        tickAmount: 2
-      }
+        tickAmount: 2,
+        labels: {
+          hideOverlappingLabels: true,
+        }
+      },
     },
 };
 
     return (
         <>
+          {gettingCategories ? <div style={{width: "100%", height: "100vh", display: "grid", placeContent: "center"}}><img style={{width: "40px"}} src={loader} alt=''/></div> :
             <div className='category'>
                 <div className="c-title">
                     <p>Categories</p>
@@ -184,7 +229,7 @@ function Category() {
                             />
                             <p>Category</p>
                             <div className="ca-inp">
-                                <input type="text" placeholder='New Category' value={category.name} onChange={e => setCategory({...category, name: e.target.value})} />
+                                <input type="text" onKeyDown={e => e.key === 'Enter' && upsertCategory()} placeholder='New Category' value={category.name} onChange={e => setCategory({...category, name: e.target.value})} />
                                 <img onClick={() => upsertCategory()} src="https://img.icons8.com/ios-glyphs/30/ffffff/plus-math.png" alt='' />
                             </div>
                         </div>
@@ -193,11 +238,11 @@ function Category() {
                 
                 <div className="search">
                     <div className="sh-body">
-                        <input type="text" placeholder="Search Categories..." value={search.word} onChange={(e) => setSearch({...search, word: e.target.value})} required />
+                        <input type="text" onKeyDown={e => e.key === 'Enter' && searchCategory()} placeholder="Search Categories..." value={search.word} onChange={(e) => setSearch({...search, word: e.target.value})} required />
                         <img
-                            onClick={() => searchCategory()}
-                            src="https://img.icons8.com/ios-glyphs/30/fc3737/search.png"
-                            alt=""
+                          onClick={() => searchCategory()}
+                          src="https://img.icons8.com/ios-glyphs/30/fc3737/search.png"
+                          alt=""
                         />
                     </div>
                     <div className="sh-filter">
@@ -215,9 +260,12 @@ function Category() {
                     </div>
                 </div>
 
-                <div className="c-list">
-                    {(displayCategories !== 0) &&
-                       displayCategories.map(c => (
+                {gettingCategories && <img style={{width: "40px"}} src={loader} alt=''/>}
+
+                {searchingCategory ? <div><img style={{width: "40px", height: "200px", display: "grid", placeContent: "center"}} src={loader} alt=''/></div> :
+                  (displayCategories.length !== 0) ? 
+                  <div className="c-list">
+                    {displayCategories.map(c => (
                         <div className="cl-cat" key={c?.id}>
                             <div className="cl-head">
                                 <img src="https://img.icons8.com/fluency-systems-filled/48/ffffff/category.png" alt='' />
@@ -232,42 +280,46 @@ function Category() {
                                 </div>
                             </div>
                             <div className="cl-body">
-                                <span style={{color: "black"}}>skills</span>
-                                {c?.skills?.map(s => (
-                                    s && <p>{s?.skill?.name}</p>
-                                ))}
+                                {c?.skills?.length !== 0 && <span style={{color: "black", marginTop: 20, flex: 0.1}}>skills</span>}
+                                <div style={{display: "flex", flexWrap: "wrap", flex: 0.9}}>
+                                  {c?.skills?.map(s => (
+                                      s && <p>{s?.skill?.name}</p>
+                                  ))}
+                                </div>
                             </div>
                         </div>
                     ))}
-                    {/* <p>{Object.keys(categories).length}</p> */}
-                </div>
-                <div style={{width: "70vw", margin: "30px 0"}} className="chart">
-                    <ReactApexChart options={chartData.options} series={chartData.series} type="area" height={150} />
-                </div>
-                
-            </div>
-            {category.open && (
-                <div className='c-edit'>
-                    <div>
-                        <div className="ce-head">
-                            <img src="https://img.icons8.com/fluency-systems-filled/48/ffffff/category.png" alt='' />
-                            <p>Edit Category</p>
-                            <img onClick={() => setCategory({ open: false, id: '', name: '' })} src="https://img.icons8.com/ios/48/fc3737/delete-sign--v1.png" alt='' />
-                        </div>
-                        <div className="ce-body">
-                            <p>{category.name}</p>
-                            <input type="text" placeholder='Category' value={category.name} onChange={e => setCategory({ ...category, name: e.target.value })} />
-                            <button onClick={() => upsertCategory()}>Update</button>
-                        </div>
+                    {deletingCategory && <img style={{width: "40px"}} src={loader} alt=''/>}
+                    <div style={{width: "70vw", margin: "30px 0"}} className="chart">
+                      <ReactApexChart options={chartData.options} series={chartData.series} type="area" height={150} />
                     </div>
-                </div>
-            )}
+                  </div> : <p style={{color: "red", marginTop: "30px"}}>No records found!</p>}
+            </div>
+          }
 
-            {err.open && (
-                <Error err={err} setErr={setErr} />
-            )}
+          {category.open && (
+              <div className='c-edit'>
+                  <div>
+                      <div className="ce-head">
+                          <img src="https://img.icons8.com/fluency-systems-filled/48/ffffff/category.png" alt='' />
+                          <p>Edit Category</p>
+                          <img onClick={() => setCategory({ open: false, id: '', name: '' })} src="https://img.icons8.com/ios/48/fc3737/delete-sign--v1.png" alt='' />
+                      </div>
+                      <div className="ce-body">
+                          <p>{category.name}</p>
+                          <input type="text" placeholder='Category' onKeyDown={e => e.key === 'Enter' && upsertCategory()} value={category.name} onChange={e => setCategory({ ...category, name: e.target.value })} />
+                          <button disabled={load} onClick={() => upsertCategory()}>Update</button>
+                      </div>
+                      {load && <div><img style={{width: "30px"}} src={spinner} alt=''/></div>}
+                  </div>
+              </div>
+          )}
 
-            <Nav />
+          {err.open && (
+              <Error err={err} setErr={setErr} />
+          )}
+
+          <Nav />
         </>
     )
 }

@@ -1,18 +1,28 @@
 import { gql, useMutation } from "@apollo/client";
 
 const ADD_EMPLOYEE_SKILL = gql`
-        mutation AddEmployeeSkill($employeeId: String!, $coskillId: String!, $level: String!) {
-            addEmployeeSkill(employeeId: $employeeId, coskillId: $coskillId, level: $level) {
+        mutation AddEmployeeSkill($employeeId: String!, $coskillId: String!, $level: String!, $id: String) {
+            addEmployeeSkill(employeeId: $employeeId, coskillId: $coskillId, level: $level, id: $id) {
+                id
                 email
                 name
                 photo
-                role
-                id
+                jobTitle
+                displayName
+                mobileNumber
+                department
+                isAdmin
+                isNewEmployee
+                division
+                location
                 employeeSkills {
                     id
                     employeeId
                     level
+                    skillId
+                    updatedAt
                     skill {
+                        id
                         skill {
                         name
                         id
@@ -21,6 +31,7 @@ const ADD_EMPLOYEE_SKILL = gql`
                         name
                         id
                         }
+                        updatedAt
                     }
                     certificate {
                         id

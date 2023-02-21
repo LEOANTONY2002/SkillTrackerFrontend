@@ -14,8 +14,18 @@ const GET_ALL_CATEGORIES = gql`
                     id
                     level
                     employee {
-                    name
-                    email
+                        id
+                        email
+                        name
+                        photo
+                        jobTitle
+                        displayName
+                        mobileNumber
+                        department
+                        isAdmin
+                        isNewEmployee
+                        division
+                        location
                     }
                     certificate {
                     name

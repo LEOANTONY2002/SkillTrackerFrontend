@@ -1,198 +1,91 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Axios, BambooAxios } from "../../axios";
-import Error from "../../components/Error";
-import Nav from "../../components/Nav";
-import { useAddEmployeeSkill } from "../../graphql/mutation/useAddEmployeeSkill";
-import { useDeleteEmployeeSkill } from "../../graphql/mutation/useDeleteEmployeeSkill";
-import { useGetAllSkills } from "../../graphql/query/useGetAllSkills";
-import { useGetEmployee } from "../../graphql/query/useGetEmployee";
-import { getUser } from "../../redux/slices/userSlice";
-import "./Profile.css";
+import React from 'react'
+import { useState } from 'react'
+import {  useSelector } from 'react-redux'
+import './Profile.css'
+import Nav from '../../components/Nav';
 
 function Profile() {
-  const { user, accessToken } = useSelector((state) => state.user);
-  const {skills} = useGetAllSkills()
-  const [userSkill, setUserSkill] = useState([]);
-  const [skill, setSkill] = useState({
-    open: false,
-    skills: [...user?.employeeSkills],
-  });
-  const [err, setErr] = useState({
-    open: false,
-    msg: "",
-  });
-  const dispatch = useDispatch();
-  const cancelToken = axios.CancelToken.source();
-  const [shrink, setShrink] = useState(true)
-  const {esAdd} = useAddEmployeeSkill()
-  const {esDelete} = useDeleteEmployeeSkill()
-
-  useEffect(() => {
-    setSkill({
-      ...skill,
-      skills: [...user?.employeeSkills]
+    const { user } = useSelector((state) => state.user)
+    const [zoom, setZoom] = useState({
+        open: false,
+        cert: {}
     })
-  }, [user])
+    const [shrink, setShrink] = useState(true)
 
+    console.log(user)
 
-  console.log("AS", skills)
-  console.log("S", skill);
-  console.log("US", userSkill);
+    return (
+        <>
+            <div className='e-profile'>
+                <div className="ep-head">
+                    <img style={user?.photo === "" ? { padding: "20px", width: "30px !important" } : {padding: "0"}} src={!user.photo ? "https://img.icons8.com/fluency-systems-filled/90/ffffff/collaborator-male.png" : user?.photo} alt='' />
+                    <h2>{user?.name}</h2>
+                    <span>{user?.email}</span>
+                    <h6>{user?.jobTitle}</h6>
+                </div>
+                <div className="ep-skills">
+                    {user?.employeeSkills?.length !== 0 ?
+                        user?.employeeSkills?.map(es => (
+                            <div className="es-card">
+                                <div className="eb-skill" style={{margin: 0}}>
+                                    <div className="ebs-head">
+                                        <img
+                                        src="https://img.icons8.com/fluency-systems-filled/48/fc3737/light-on--v1.png"
+                                        alt=""
+                                        />
+                                        <div>
+                                            <p>{es?.skill?.skill?.name}</p>
+                                            <span>{es?.skill?.category?.name}</span>
+                                        </div>
+                                    </div>
+                                    <h5
+                                    style={{color: "red"}}
+                                    >
+                                    {es?.level}
+                                    </h5>
+                                    <h6>{es?.updatedAt?.split("T")[0]}</h6>
+                                </div>
+                                {es?.certificate && (
+                                    <div className="s-cert">
+                                    <span></span>
+                                    <div onClick={() => setZoom({ open: true, cert: es?.certificate })}>
+                                        <img src="https://img.icons8.com/fluency-systems-regular/60/fc3737/certificate.png" alt=""/>
+                                    </div>
+                                    </div>
+                                )}
+                            </div>
+                         )) : <p style={{color: "#fc3737a4"}}>No skills found!</p>
+                        }
+                    </div>
 
-
-  const addSkill = async (coskillId, level) => {
-    let {loading: addingES, data: addES} = await esAdd({
-      variables: {
-        employeeId: user?.id,
-        coskillId,
-        level
-      }
-    })
-    // let { loading: gettingEmployee, data: employeeData } = await getEmployee({
-    //   variables: {
-    //     email: user?.email,
-    //   }
-    // })
-    console.log("GET_EMPLOYEE", addES.addEmployeeSkill)
-    dispatch(getUser(addES?.addEmployeeSkill))
-  };
-
-  const delSkill = async (eskillId) => {
-    console.log(eskillId)
-    let {loading: deletingES, data: employeeData} = await esDelete({
-      variables: {
-        eskillId,
-        employeeId: user?.id,
-      }
-    })
-    console.log("DELETE_EMPLOYEE", employeeData)
-    dispatch(getUser(employeeData?.deleteEmployeeSkill))
-  };
-
-  return (
-    <>
-      <div className="profile">
-        <div className="p-main">
-          <div className="p-img">
-            <img
-              style={
-                user.photo !== null
-                  ? { padding: "0px", width: "100px", height: "100px" }
-                  : { padding: "20px" }
-              }
-              src={
-                user.photo !== null
-                  ? user.photo
-                  : "https://img.icons8.com/fluency-systems-filled/90/ffffff/collaborator-male.png"
-              }
-              alt=""
-            />
-          </div>
-          <div className="p-title">
-            <p>{user.name}</p>
-            <span>{user.email}</span>
-          </div>
-          <div className="p-skills">
-            <div className="ps-head">
-              <p>Skills</p>
-              <span></span>
-              <img
-                onClick={() => setSkill({ ...skill, open: true })}
-                src="https://img.icons8.com/ios-glyphs/30/ffffff/plus-math.png"
-                alt=""
-              />
-            </div>
-            <div className="psks">
-              {user.employeeSkills.length !== 0 ? (
-                user.employeeSkills.map((es) => (
-                  <div key={es?.skill?.skill?.id} className="psk">
-                    <p>{es?.skill?.skill?.name}</p>
-                    <h6></h6>
-                    <span>
-                      {es?.skill?.category?.name}
-                    </span>
-                  </div>
-                ))
-              ) : (
-                <h6 style={{margin: "30px 0", color: "lightgray"}}>Add your skills</h6>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-      {skill.open && (
-        <div className="e-skill">
-          <div className="s-add">
-            <div style={{ width: "100%" }} className="ce-head">
-              <img src="https://img.icons8.com/fluency-systems-filled/48/ffffff/light-on--v1.png" alt="" />
-              <p>Edit Skill</p>
-              <img
-                onClick={() => {
-                  setSkill({ open: false, skills: [...user?.employeeSkills] });
-                }}
-                src="https://img.icons8.com/ios/48/fc3737/delete-sign--v1.png"
-                alt=""
-              />
-            </div>
-            <div className="sa-body">
-              <div style={{gap: "25px"}}>
-                {skill?.skills.length !== 0 ?
-                  skill?.skills?.map((es) => (
-                    <div
-                      onClick={() => delSkill(es.id)}
-                      className="delete-skill"
-                    >
-                      <div>
-                        <div>
-                          <p>{es?.skill?.skill?.name}</p>
-                          <span>
-                            {es?.skill?.category?.name}
-                          </span>
+                    {zoom.open && (
+                        <div className="zoom">
+                        <img
+                            onClick={() => {
+                            setZoom({ open: false, cert: {} });
+                            }}
+                            src="https://img.icons8.com/ios/48/fc3737/delete-sign--v1.png"
+                            alt=""
+                        />
+                        <div className="z-cert">
+                            <div className="zc-title">
+                            <p>{zoom.cert?.name}</p>
+                            <span>{zoom.cert?.publisher?.name}</span>
+                            </div>
+                            <img src={zoom.cert?.photo} alt="" />
+                            <div className="zc-exp">
+                            <p>expiry</p>
+                            <span>{zoom.cert?.expiry}</span>
+                            </div>
                         </div>
-                        <h6>{es?.level}</h6>
-                      </div>
-                      <img src="https://img.icons8.com/fluency-systems-regular/48/ffffff/delete.png" alt="" />
-                    </div>
-                  )): (<h6 style={{margin: "30px 0", color: "lightgray"}}>Add your skills</h6>)}
-              </div>
-              <div>
-                <p className="sel">
-                  Select your skills <span></span>{" "}
-                </p>
-                {skills.length !== 0 &&
-                  skills?.map((cos) => (
-                    <div className="sab">
-                      <div className="sab-sk">
-                        <p>{cos?.skill?.name}</p>
-                        <span>{cos?.category?.name}</span>
-                      </div>
-                      <div className="sab-exp">
-                        <p onClick={() => addSkill(cos?.id, "MINIMAL")}>Minimal</p>
-                        <p onClick={() => addSkill(cos?.id, "BEGINNER")}>Beginner</p>
-                        <p onClick={() => addSkill(cos?.id, "INTERMEDIATE")}>
-                          Intermediate
-                        </p>
-                        <p onClick={() => addSkill(cos?.id, "ADVANCED")}>Advanced</p>
-                      </div>
-                    </div>
-                  ))}
-              </div>
+                        </div>
+                    )}
             </div>
-          </div>
-        </div>
-      )}
-      {err.open && (
-        <div className="err">
-          <Error err={err} setErr={setErr} />
-        </div>
-      )}
-      <div className="nav-menu">
-        <Nav shrink={shrink} setShrink={setShrink} />
-      </div>
-    </>
-  );
+            <div className="nav-menu">
+                <Nav shrink={shrink} setShrink={setShrink} />
+            </div>
+        </>
+    )
 }
 
-export default Profile;
+export default Profile

@@ -3,13 +3,16 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import FileBase64 from "react-file-base64";
-import "./Upload.css";
+import "./Certificate.css";
 import Nav from "../../components/Nav";
 import { useAddCertificate } from "../../graphql/mutation/useCertificate";
 import { getUser } from "../../redux/slices/userSlice";
 import { useGetAllPublishers } from "../../graphql/query/useGetAllCertificates";
+import { useNavigate } from "react-router-dom";
+import loader from '../../assets/loader.svg'
+import Error from "../../components/Error";
 
-function Upload() {
+function Certificate() {
     const { user, accessToken } = useSelector((state) => state.user);
     const [cert, setCert] = useState({
         open: false,
@@ -21,10 +24,11 @@ function Upload() {
         employeeId: "",
         employeeSkillId: ""
     });
-    const [skill, setSkill] = useState({
+    const [zoom, setZoom] = useState({
         open: false,
-        skills: [...user.employeeSkills],
-    });
+        cert: {}
+    })
+    const [load, setLoading] = useState(false)
     const [err, setErr] = useState({
         open: false,
         msg: ''
@@ -32,29 +36,44 @@ function Upload() {
     const dispatch = useDispatch();
     const [shrink, setShrink] = useState(true)
     const {addCertificate} = useAddCertificate()
-    const {loading, publishers: publishers=[], error} = useGetAllPublishers()
+    const navigate = useNavigate()
+    const {loading: gettingPublishers, publishers: publishers=[], error} = useGetAllPublishers()
 
     console.log(cert);
+
+    useEffect(() => {
+        if (!user) {
+            navigate("/employee/login")
+        }
+    }, [])
 
     const getFiles = (p) => {
         setCert({ ...cert, photo: p.base64 });
     };
 
     const upload = async () => {
-        if (cert.open) {
-            try {
-                let {loading, data, error} = await addCertificate({
-                    variables: cert
-                })
-                dispatch(getUser(data?.addCertificate));
-                setCert({ ...cert, open: false });
-            } catch (error) {
-                console.log(error)
+        if (cert.name !== ""  && cert.publisherId && cert.photo !== "") {
+            setLoading(true)
+            let {loading, data} = await addCertificate({
+                variables: cert
+            })
+            dispatch(getUser(data?.addCertificate));
+            setCert({ ...cert, open: false });
+            if (loading) setLoading(true)
+            if (data?.errors) {
+                setLoading(false)
                 setErr({
                     open: true,
                     msg: error.message
                 })
             }
+            setLoading(false)
+        } else {
+            setLoading(false)
+            setErr({
+                open: true,
+                msg: "Fill all the fields!"
+            })
         }
     };
 
@@ -64,7 +83,7 @@ function Upload() {
                 <div className="upl-main">
                     {user?.employeeSkills?.length !== 0 ?
                         user?.employeeSkills?.map((es) => (
-                            <div className="u-main">
+                            <div key={es?.id} className="u-main">
                                 <div className="u-skill">
                                     <div className="us-head">
                                         <img src="https://img.icons8.com/fluency-systems-regular/48/fc3737/light-on--v1.png" alt=""/>
@@ -77,7 +96,7 @@ function Upload() {
                                     <div className="us-body">
                                         <span></span>
                                         <img
-                                            onClick={es?.certificate !== null ? () => setCert({ ...cert, open: true, id: es.certificate.id, name: es.certificate.name, expiry: es.certificate.expiry, publisherId: es.certificate.publisher.id, photo: es.certificate.photo, employeeSkillId: es?.id, employeeId: es.employeeId }) : () =>
+                                            onClick={es?.certificate ? () => setCert({ ...cert, open: true, id: es.certificate.id, name: es.certificate.name, expiry: es.certificate.expiry, publisherId: es.certificate.publisher.id, photo: es.certificate.photo, employeeSkillId: es.id, employeeId: es.employeeId }) : () =>
                                                 setCert({ ...cert, open: true, id: "", name: "", expiry: "", publisherId: "", photo: "", employeeSkillId: es?.id, employeeId: es.employeeId })
                                             }
                                             src={es?.certificate !== null ? "https://img.icons8.com/fluency-systems-regular/48/ffffff/pencil.png" : "https://img.icons8.com/fluency-systems-regular/48/ffffff/upload.png"}
@@ -87,7 +106,7 @@ function Upload() {
                                 </div>
                                 {es?.certificate !== null && (
                                     <div className="u-cert">
-                                        <img src={es?.certificate?.photo} alt="" />
+                                        <img onClick={() => setZoom({open: true, cert: es?.certificate})} src={es?.certificate?.photo} alt="" />
                                     </div>
                                 )}
                             </div>
@@ -102,6 +121,7 @@ function Upload() {
                             <div className="l-body">
                                 <img
                                     onClick={() => {
+                                        setLoading(false)
                                         setCert({ ...cert, open: false });
                                     }}
                                     src="https://img.icons8.com/ios/48/fc3737/delete-sign--v1.png"
@@ -147,7 +167,7 @@ function Upload() {
                                         marginBottom: "-10px",
                                     }}
                                 >
-                                    Expiry
+                                    Expiry <span style={{color: "#fc3737a1", fontSize: "smaller", marginLeft: "10px"}}>{cert.expiry}</span>
                                 </p>
                                 <input
                                     style={{
@@ -158,20 +178,45 @@ function Upload() {
                                     type="date"
                                     onChange={(e) => setCert({ ...cert, expiry: e.target.value })}
                                 />
-                                <button onClick={() => upload()}>Upload</button>
+                                {load && <div><img style={{width: "40px"}} src={loader} alt="" /></div> }
+                                <button disabled={load} onClick={() => upload()}>Upload</button>
                             </div>
                         </div>
                     )}
-
-                    
                 </div>
             </div>
+
+            {zoom.open && (
+                <div className="zoom">
+                <img
+                    onClick={() => {
+                    setZoom({ open: false, cert: {} });
+                    }}
+                    src="https://img.icons8.com/ios/48/fc3737/delete-sign--v1.png"
+                    alt=""
+                />
+                <div className="z-cert">
+                    <div className="zc-title">
+                    <p>{zoom.cert?.name}</p>
+                    <span>{zoom.cert?.publisher?.name}</span>
+                    </div>
+                    <img src={zoom.cert?.photo} alt="" />
+                    <div className="zc-exp">
+                    <p>expiry</p>
+                    <span>{zoom.cert?.expiry}</span>
+                    </div>
+                </div>
+                </div>
+            )}
+
             <div className="nav-menu">
                 <Nav shrink={shrink} setShrink={setShrink} />
             </div>
-            
+            <div>
+                <Error err={err} setErr={setErr} />
+            </div>
         </>
     );
 }
 
-export default Upload;
+export default Certificate;

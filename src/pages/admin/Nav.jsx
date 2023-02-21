@@ -33,6 +33,10 @@ function Nav() {
                     <img src="https://img.icons8.com/fluency-systems-regular/48/ffffff/certificate.png" alt='' />
                     <p>Certificates</p>
                 </div>
+                <div onClick={() => navigate('/admin/admins')}>
+                    <img src="https://img.icons8.com/fluency-systems-regular/48/ffffff/system-administrator-male.png" alt='' />
+                    <p>Admins</p>
+                </div>
             </div>
         </div>
     )

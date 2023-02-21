@@ -1,0 +1,208 @@
+.e-skill::-webkit-scrollbar {
+  display: none;
+}
+
+.e-skill {
+  width: 100vw;
+  min-height: 100vh;
+  padding: 20px 0;
+  overflow-y: scroll;
+  position: absolute;
+  top: 0;
+  left: 0;
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: small;
+}
+.s-add {
+  min-width: 260px;
+  max-width: 80vw;
+  padding: 30px;
+  background-color: #fffbfb;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.sa-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 10px;
+}
+.sa-head img {
+  background-color: #fde5e5;
+  box-shadow: 0 2px 15px rgba(255, 186, 186, 0.221);
+  width: 20px;
+  padding: 6px;
+  border-radius: 50%;
+}
+.sa-body {
+  width: 100%;
+  margin: 20px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 50px;
+}
+.sa-body > div {
+  width: 100%;
+  gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+}
+.sel {
+  position: absolute;
+  top: -30px;
+  left: 0;
+  font-size: smaller;
+  color: #ff815a;
+  display: flex;
+  align-items: center;
+}
+.sel span {
+  height: 1px;
+  width: 100px;
+  margin-left: 10px;
+  background: linear-gradient(90deg, rgb(255, 45, 45), transparent);
+}
+.delete-skill {
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(255, 107, 107, 0.094);
+  border-radius: 10px;
+  position: relative;
+}
+.delete-skill > div > div {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  padding-right: 20px;
+  gap: 10px;
+}
+.delete-skill span {
+  color: #ffbfac;
+  font-size: smaller;
+}
+.delete-skill h6 {
+  border-top: 1px solid #fde5e5;
+  width: 80%;
+  padding: 5px;
+  text-align: center;
+}
+.delete-skill img {
+  background-color: #fde5e5;
+  background: linear-gradient(120deg, rgb(255, 45, 45), #ff815a);
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  box-shadow: 0 2px 10px rgba(255, 129, 129, 0.413);
+  border-radius: 50%;
+  padding: 5px;
+  position: absolute;
+  right: -15px;
+}
+
+.sab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.sab-sk {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(255, 107, 107, 0.094);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-radius: 10px;
+  z-index: 10;
+}
+.sab-sk:hover::before {
+  transform: scale(1.08);
+}
+.sab-sk p {
+  padding: 0 15px;
+  padding-top: 10px;
+}
+.sab-sk span {
+  color: #ffbfac;
+  font-size: smaller;
+  padding: 10px 15px;
+}
+.sab-sk h6 {
+  border-top: 1px solid #fde5e5;
+  padding: 5px 0;
+  width: 100%;
+  text-align: center;
+}
+.sab-exp {
+  display: flex;
+  flex-direction: column;
+  font-size: smaller;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(255, 107, 107, 0.094);
+  position: relative;
+  overflow: hidden;
+  z-index: -1;
+  position: absolute;
+  transition: all 0.3s ease-in-out;
+  background-color: white;
+}
+.sab:hover .sab-exp {
+  transform: translateY(85px);
+  z-index: 20;
+}
+.sab-exp p {
+  padding: 10px 5px;
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+.sab-exp p:hover {
+  color: rgb(211, 211, 211);
+}
+.sab-exp p:first-of-type {
+  background-color: white;
+}
+.sab-exp p:nth-of-type(2) {
+  background-color: #fde5e5;
+}
+.sab-exp p:nth-of-type(3) {
+  background-color: #ffbfac;
+}
+.sab-exp p:last-of-type {
+  background-color: #ff815a;
+}
+.s-add button {
+  width: 100px;
+  height: 40px;
+  border: none;
+  background: linear-gradient(120deg, red, #ff8888);
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
+  box-shadow: 0 5px 30px rgba(255, 27, 27, 0.395);
+  cursor: pointer;
+  font-size: smaller;
+  margin-bottom: -40px;
+}
+.err {
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  bottom: 20px;
+}

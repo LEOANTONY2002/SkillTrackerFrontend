@@ -18,10 +18,9 @@
 }
 .ct-emp img {
   background: linear-gradient(120deg, rgb(255, 45, 45), #ff815a);
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  box-shadow: 0 2px 10px rgba(255, 129, 129, 0.413);
+  width: 50px;
+  height: 50px;
+  box-shadow: 0 2px 10px rgba(255, 129, 129, 0.208);
   border-radius: 50%;
 }
 .ct-emp div {
@@ -42,6 +41,7 @@
 .ct-img img {
   width: 250px;
   box-shadow: 0 3px 15px rgba(154, 154, 154, 0.265);
+  cursor: pointer;
 }
 
 .ct-cont {

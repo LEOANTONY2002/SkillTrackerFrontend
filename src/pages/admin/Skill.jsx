@@ -9,9 +9,13 @@ import "./Category.css";
 import Nav from "./Nav";
 import "./Skill.css";
 import ReactApexChart from "react-apexcharts"
+import spinner from '../../assets/spinner.gif'
+import loader from '../../assets/loader.svg'
+import { useGetAllSkills } from "../../graphql/query/useGetAllSkills";
+
 
 function Skill() {
-  const { categories, skills } = useSelector((state) => state.admin);
+  const { categories } = useSelector((state) => state.admin);
   const [displaySkills, setDisplaySkills] = useState([])
   const [skill, setSkill] = useState({
     open: false,
@@ -34,11 +38,13 @@ function Skill() {
     skills: []
   })
   const dispatch = useDispatch();
-  const {addSkill} = useAddSkill()
-  const {updateSkill} = useUpdateSkill()
-  const {deleteSkill} = useDeleteSkill()
-  const {searchSkills} = useGetSearchSkills()
+  const {loading: gettingSkills, skills: skills=[], error: errorSkills} = useGetAllSkills()
+  const {addSkill, loading: addingSkill, error: errorAdd} = useAddSkill()
+  const {updateSkill, loading: updatingSkill, error: errorUpdate} = useUpdateSkill()
+  const {deleteSkill, loading: deletingSkill, error: errorDelete} = useDeleteSkill()
+  const {searchSkills, loading: searchingSkills, error: errorSearch} = useGetSearchSkills()
   const [activeIndex, setActiveIndex] = useState(null);
+  const [load, setLoading] = useState(false)
 
   console.log(displaySkills);
 
@@ -67,70 +73,125 @@ function Skill() {
 
   // Add
   const addNewSkill = async () => {
-    (skill.name === "") | (skill.categoryId === "") &&
+    if (skill.name !== "" || skill.categoryId !== "") {
+      const { data } = await addSkill({variables: skill})
+      if (addingSkill) setLoading(true)
+      if (data?.addSkill?.length !== 0) {
+        dispatch(getSkills(data.addSkill));
+        setSkill({
+          open: false,
+          id: "",
+          name: "",
+          skillId: "",
+          categoryId: ""
+        });
+        setAdd({
+          open: false,
+          name: "",
+          categoryId: ""
+        });
+        setDisplaySkills(skills)
+        setLoading(false)
+      }
+      if (errorAdd) {
+        setLoading(false)
+        setErr({
+          open: true,
+          msg: errorAdd,
+        });
+      }
+    } else {
+      setLoading(false)
       setErr({
         open: true,
-        msg: "Check the fields - Skill and Category!",
+        msg: "Fill all the fields!",
       });
-    const { data } = await addSkill({variables: skill})
-    dispatch(getSkills(data.addSkill));
-    setSkill({
-      open: false,
-      id: "",
-      name: "",
-      skillId: "",
-      categoryId: ""
-    });
-    setAdd({
-      open: false,
-      name: "",
-      categoryId: ""
-    });
-    setDisplaySkills(skills)
+    }
   };
 
   // Update
   const editSkill = async () => {
     const { data } = await updateSkill({variables: {...skill}})
-    dispatch(getSkills(data.editSkill));
-    setSkill({
-      open: false,
-      id: "",
-      name: "",
-      skillId: "",
-      categoryId: ""
-    });
-    setAdd({
-      open: false,
-      name: "",
-      categoryId: ""
-    });
-    setDisplaySkills(skills)
+    if (updatingSkill) setLoading(true)
+    if (data?.editSkill?.length !== 0) {
+      dispatch(getSkills(data.editSkill));
+      setSkill({
+        open: false,
+        id: "",
+        name: "",
+        skillId: "",
+        categoryId: ""
+      });
+      setAdd({
+        open: false,
+        name: "",
+        categoryId: ""
+      });
+      setDisplaySkills(skills)
+      setLoading(false)
+    }
+    if (errorUpdate) {
+      setLoading(false)
+        setErr({
+          open: true,
+          msg: errorUpdate,
+        });
+    }
   }
 
   // Delete
   const delSkill = async (coskillId, id) => {
     const { data } = await deleteSkill({variables: {coskillId, id}})
-    dispatch(getSkills(data.deleteSkill));
-    setSkill({
-      open: false,
-      id: "",
-      name: "",
-      categoryId: "",
-    });
-    setDisplaySkills(skills)
+    if (deletingSkill) setLoading(true)
+    if (data?.deleteSkill?.length !== 0) {
+      dispatch(getSkills(data.deleteSkill));
+      setSkill({
+        open: false,
+        id: "",
+        name: "",
+        categoryId: "",
+      });
+      setDisplaySkills(skills)
+      setLoading(false)
+    }
+    if (errorDelete) {
+      setLoading(false)
+        setErr({
+          open: true,
+          msg: errorDelete,
+        });
+    }
   };
 
   // Search
   const searchSkill = async () => {
-    const {loading, data, error} = await searchSkills({
-      variables: {word: search.word}
-    })
-    setSearch({...search, skills: data?.searchSkill})
-    data?.searchSkill.length === 0 && setErr({
-      open: true,
-      msg: "No records found!"
-    })
+    if (search.word !== "") {
+      const { data } = await searchSkills({
+        variables: {word: search.word}
+      })
+      if (searchingSkills) setLoading(true)
+      if (data?.searchSkill?.length === 0) {
+        setLoading(false)
+        setDisplaySkills([])
+      } else {
+        setLoading(false)
+        setSearch({...search, skills: data?.searchSkill})
+      }
+      if (errorSearch) {
+        setLoading(false)
+        setErr({
+          open: true,
+          msg: errorSearch,
+        });
+      }
+    } else {
+      setLoading(false)
+      setErr({
+        open: true,
+        msg: "Enter skill to search!"
+      })
+    }
+    
   }
 
   // Ascending
@@ -193,6 +254,14 @@ function Skill() {
         categories: [
             ...displaySkills?.map(s => (s?.skill?.name))
         ],
+        labels: {
+          hideOverlappingLabels: true,
+        }
+      },
+      yaxis: {
+        labels: {
+            hideOverlappingLabels: true,
+        }
       }
     },
 };
@@ -243,6 +312,7 @@ function Skill() {
                     </span>
                   ))}
                 </div>
+                {load && <div><img style={{width: "120px"}} src={loader} alt=''/></div>}
                 <div className="ce-sub" onClick={() => addNewSkill()}>
                   <img
                       src="https://img.icons8.com/ios-glyphs/30/ffffff/plus-math.png"
@@ -257,7 +327,7 @@ function Skill() {
 
         <div className="search">
           <div className="sh-body">
-            <input type="text" placeholder="Search Skills..." value={search.word} onChange={(e) => setSearch({...search, word: e.target.value})} required />
+            <input type="text" onKeyDown={(e) => e.key === 'Enter' && searchSkill()} placeholder="Search Skills..." value={search.word} onChange={(e) => setSearch({...search, word: e.target.value})} required />
             <img
                 onClick={() => searchSkill()}
                 src="https://img.icons8.com/ios-glyphs/30/fc3737/search.png"
@@ -279,70 +349,79 @@ function Skill() {
           </div>
         </div>
 
-        <div className="c-list">
-          {(displaySkills?.length !== 0) &&
-            displaySkills.map((s) => (
-              <div className="sl-skill" key={s?.id}>
-                <div className="sl-head">
-                  <img
-                    src="https://img.icons8.com/fluency-systems-filled/48/ffffff/light-on--v1.png"
-                    alt=""
-                  />
-                  <div>
-                    <p className="sl-body-p">{s?.skill?.name} <h5></h5> <span>{s?.category?.name}</span></p>
+        {searchingSkills || gettingSkills ? <div style={{height: "200px"}}><img style={{width: "40px", display: "grid", placeContent: "center"}} src={loader} alt=''/></div>     :
+          
+          (displaySkills?.length !== 0) ? <div className="c-list">
+            {displaySkills.map((s) => (
+                <div className="sl-skill" key={s?.id}>
+                  <div className="sl-head">
                     <img
-                      onClick={() =>
-                        setSkill({
-                          open: true,
-                          id: s?.id,
-                          name: s?.skill?.name,
-                          skillId: s?.skillId,
-                          categoryId: s?.categoryId,
-                        })
-                      }
-                      src="https://img.icons8.com/fluency-systems-regular/48/fc3737/pencil.png"
+                      src="https://img.icons8.com/fluency-systems-filled/48/ffffff/light-on--v1.png"
                       alt=""
                     />
-                    <img
-                      onClick={() => delSkill(s.id, s?.skill?.id)}
-                      src="https://img.icons8.com/fluency-systems-regular/48/fc3737/delete.png"
-                      alt=""
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          {/* <p>{Object.keys(categories).length}</p> */}
-        </div>
-        <div style={{width: "70vw", margin: "30px 0"}} className="chart">
-            <ReactApexChart options={chartData.options} series={chartData.series} type="area" height={150} />
-        </div>
-        <div className="s-emps">
-          {displaySkills && displaySkills?.map((ds, index) => (
-            ds?.employeeSkills?.length !== 0 && <div className="sem">
-            <div className="sem-head" onClick={() => index !== activeIndex ? setActiveIndex(index) : setActiveIndex(null)}>
-              <span>{ds?.skill?.name}</span>
-              <img
-                src="https://img.icons8.com/fluency-systems-regular/25/fc3737/expand-arrow--v1.png"
-                alt=""
-              />
-            </div>
-            {index === activeIndex && 
-              <div className="sem-body">
-                {ds?.employeeSkills?.map(es => (
-                  <div className="sem-emp">
-                    <img src={es?.employee?.photo ? es?.employee?.photo : "https://img.icons8.com/fluency-systems-filled/70/fc3737/collaborator-male?.png"} style={es?.employee?.photo ? {padding: "0px", width: "25px", height: "25px"} : {padding: "7px", width: "18px", height: "18px"}} alt="" />
                     <div>
-                      <p>{es?.employee?.name}</p>
-                      <span>{es?.employee?.email}</span>
+                      <p className="sl-body-p">{s?.skill?.name} <h5></h5> <span>{s?.category?.name}</span></p>
+                      <img
+                        onClick={() =>
+                          setSkill({
+                            open: true,
+                            id: s?.id,
+                            name: s?.skill?.name,
+                            skillId: s?.skillId,
+                            categoryId: s?.categoryId,
+                          })
+                        }
+                        src="https://img.icons8.com/fluency-systems-regular/48/fc3737/pencil.png"
+                        alt=""
+                      />
+                      <img
+                        onClick={() => delSkill(s.id, s?.skill?.id)}
+                        src="https://img.icons8.com/fluency-systems-regular/48/fc3737/delete.png"
+                        alt=""
+                      />
                     </div>
                   </div>
+                </div>
+              ))}
+              <div className="s-emps">
+                <p style={{textAlign: "left", width: "100%", color: "red"}}>Skills on Employees</p>
+                {displaySkills && displaySkills?.map((ds, index) => (
+                  ds?.employeeSkills?.length !== 0 && <div className="sem">
+                  <div className="sem-head" onClick={() => index !== activeIndex ? setActiveIndex(index) : setActiveIndex(null)}>
+                    <div style={{display: "flex", alignItems: "center", gap: "5px"}}>
+                      <span>{ds?.skill?.name}</span>
+                      <h5 style={{color: "#ffb1b1"}}>({ds?.employeeSkills?.length})</h5>
+                    </div>
+                    <img
+                      src="https://img.icons8.com/fluency-systems-regular/25/fc3737/expand-arrow--v1.png"
+                      alt=""
+                    />
+                  </div>
+                  {index === activeIndex && 
+                    <div className="sem-body">
+                      {ds?.employeeSkills?.map(es => (
+                        <div className="sem-emp">
+                          <img src={es?.employee?.photo ? es?.employee?.photo : "https://img.icons8.com/fluency-systems-filled/70/fc3737/collaborator-male?.png"} style={es?.employee?.photo ? {padding: "0px", width: "25px", height: "25px"} : {padding: "7px", width: "18px", height: "18px"}} alt="" />
+                          <div>
+                            <p>{es?.employee?.name}</p>
+                            <span>{es?.employee?.email}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  }
+                </div>
                 ))}
               </div>
-            }
-          </div>
-          ))}
-        </div>
+              <div style={{width: "70vw", marginBottom: "30px"}} className="chart">
+                <div>
+                  <ReactApexChart options={chartData.options} series={chartData.series} type="area" height={150} />
+                </div>
+              </div>
+          </div> : 
+          <p style={{color: "red", marginTop: "30px"}}>No records found!</p>
+        }
+        
       </div>
 
       {skill.open && (

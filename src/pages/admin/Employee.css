@@ -50,7 +50,6 @@
 }
 .emp {
   position: relative;
-  max-width: 320px;
 }
 .emp > span {
   background-color: red;
@@ -60,10 +59,11 @@
   padding: 6px 10px;
   position: absolute;
   bottom: 45px;
-  right: -37px;
+  right: -19px;
   transform: rotate(90deg);
   border-top-right-radius: 6px;
   border-top-left-radius: 6px;
+  display: none;
 }
 .e-main {
   display: flex;
@@ -168,6 +168,9 @@
   backdrop-filter: blur(20px);
   display: grid;
   place-content: center;
+}
+.zoom {
+  position: fixed;
 }
 .u-prof > div {
   margin: auto;
@@ -434,5 +437,12 @@
   .up-body {
     flex: 0 1;
     height: max-content;
+  }
+  .e-main {
+    width: 90vw;
+  }
+  .emp {
+    max-width: 90vw;
+    word-break: break-all;
   }
 }

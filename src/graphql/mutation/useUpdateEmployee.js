@@ -4,14 +4,25 @@ export const UPDATE_EMPLOYEE = gql`
         mutation Mutation($id: String!, $email: String!, $name: String!, $photo: String){
             editEmployee(id: $id, email: $email, name: $name, photo: $photo) {
                 id
-                name
                 email
+                name
                 photo
+                jobTitle
+                displayName
+                mobileNumber
+                department
+                isAdmin
+                isNewEmployee
+                division
+                location
                 employeeSkills {
                     id
                     employeeId
                     level
+                    skillId
+                    updatedAt
                     skill {
+                        id
                         skill {
                         name
                         id

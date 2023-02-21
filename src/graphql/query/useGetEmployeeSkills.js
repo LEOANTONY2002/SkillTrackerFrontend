@@ -5,12 +5,18 @@ const GET_EMPLOYEE_SKILLS = gql`
             employeeSkill(employeeId: $employeeId) {
                 id
                 employee {
-                id
-                name
-                email
-                photo
-                role
-                isManager
+                    id
+                    email
+                    name
+                    photo
+                    jobTitle
+                    displayName
+                    mobileNumber
+                    department
+                    isAdmin
+                    isNewEmployee
+                    division
+                    location
                 }
                 skill {
                 skill {
