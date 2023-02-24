@@ -28,38 +28,31 @@ function Dashboard() {
     const {syncEmployeesData, loading: syncing, error: syncError} = useSyncEmployeesData()
     const {getLastSync, loading: gettingLastSync, data: lastSync=""} = useGetLastSync()
 
-    console.log(lastSync)
-
-    // useEffect(() => {
-    //     if (admin.categories.length === 0) {
-    //         dispatch(getCategories(categories))
-    //     }
-    //     if (admin.skills.length === 0) {
-    //         dispatch(getSkills(skills))
-    //     }
-    //     if (admin.employees.length === 0) {
-    //         dispatch(getEmployees(employees))
-    //     }
-    //     if (admin.certificates.length === 0) {
-    //         dispatch(getCertificates(certificates))
-    //     }
-    //     console.log("done", admin)
-    // }, [gettingCategories, getEmployees, gettingSkills, gettingCertificates])
 
     useEffect(() => {
-       getLastSync()
-    }, [syncing])
+        if (admin.categories.length === 0) {
+            dispatch(getCategories(categories))
+        }
+        if (admin.skills.length === 0) {
+            dispatch(getSkills(skills))
+        }
+        if (admin.employees.length === 0) {
+            dispatch(getEmployees(employees))
+        }
+        if (admin.certificates.length === 0) {
+            dispatch(getCertificates(certificates))
+        }
+        console.log("done", admin)
+    }, [gettingCategories, getEmployees, gettingSkills, gettingCertificates])
 
     const sync = async () => {
-        setLoading(true)
         let {data} = await syncEmployeesData()
         if (data?.syncEmployeesData?.length !== 0) {
-            setLoading(false)
+            let {data: ls} = await getLastSync()
+    console.log(ls)
             dispatch(getEmployees(data?.syncEmployeesData))
         }
-        if (syncing) setLoading(true)
         if (syncError) {
-            setLoading(false)
             console.log("Sync Failed", syncError)
         }
         setLoading(false)
@@ -186,7 +179,7 @@ function Dashboard() {
     
     return (
         <>
-        {gettingEmployees | gettingCategories | gettingSkills ? <div style={{display: "grid", placeContent: "center", height: "100vh", width: "100vw"}}><img src={loader} alt="" /></div> : 
+        {gettingEmployees | gettingCategories | gettingSkills | gettingCertificates | gettingLastSync ? <div style={{display: "grid", placeContent: "center", height: "100vh", width: "100vw"}}><img src={loader} alt="" /></div> : 
             <div className="dashboard">
                 <div className="d-mixed">
                     <div className='dm-cont'>
@@ -245,7 +238,7 @@ function Dashboard() {
                     </div>
                     <div className="d-sync">
                         <p>Sync Employees Data</p>
-                        <h5>Last sync: <span>{lastSync !== "" ? `${getDate(lastSync?.lastSync?.lastSync)}` : ""}</span></h5>
+                        <h5>Last sync: <span>{gettingLastSync ? <img style={{width: "30px", height: "20px", boxShadow: "none", backgroundColor: "transparent", margin: 0, position: "absolute", bottom: "20px"}} src={loader} alt="" /> : lastSync !== "" ? `${getDate(lastSync?.lastSync?.lastSync)}` : ""}</span></h5>
                         <div>
                             <img onClick={() => sync()} src="https://img.icons8.com/fluency-systems-regular/48/ffffff/synchronize.png" alt='' />
                             <p>Sync now</p>
@@ -278,7 +271,7 @@ function Dashboard() {
                             )) : <div></div>}
                         </div>
                         <div className="chart">
-                                <ReactApexChart width={"100%"} options={chartData2.options} series={chartData2.series} type="area" height={"100%"} />
+                            <ReactApexChart width={"100%"} options={chartData2.options} series={chartData2.series} type="area" height={"100%"} />
                         </div>
                     </div>
                 </div>
@@ -304,7 +297,7 @@ function Dashboard() {
                             )) : <div></div>}
                         </div>
                         <div className="chart">
-                                <ReactApexChart options={chartData.options} series={chartData.series} type="area" width={"100%"} height={200} />
+                            <ReactApexChart options={chartData.options} series={chartData.series} type="area" width={"100%"} height={200} />
                         </div>
                     </div>
                     

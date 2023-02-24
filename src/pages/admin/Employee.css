@@ -168,6 +168,7 @@
   backdrop-filter: blur(20px);
   display: grid;
   place-content: center;
+  z-index: 30;
 }
 .zoom {
   position: fixed;

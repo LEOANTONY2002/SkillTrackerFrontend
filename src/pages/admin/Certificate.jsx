@@ -4,7 +4,6 @@ import Error from '../../components/Error'
 import './Category.css'
 import './Certificate.css'
 import Nav from './Nav'
-import spinner from '../../assets/spinner.gif'
 import loader from '../../assets/loader.svg'
 import { useAddPublisher, useDeletePublisher } from '../../graphql/mutation/usePublisher'
 import { useGetAllCertificates, useGetAllPublishers } from '../../graphql/query/useGetAllCertificates'
@@ -38,10 +37,10 @@ function Certificate() {
     const [displayCertificates, setDisplayCertificates] = useState([])
     const [displayPublishers, setDisplayPublishers] = useState([])
     const [selectedOptionPublisher, setSelectedOptionPublisher] = useState(null);
-    const {addPublisher} = useAddPublisher()
-    const {deletePublisher} = useDeletePublisher()
-    const {loading: gettingPublishers, publishers: publishers=[], error} = useGetAllPublishers()
-    const {loading: gettingCertificates, certificates: certificates=[], error: errorCertificates} = useGetAllCertificates()
+    const {addPublisher, loading: addingPublisher} = useAddPublisher()
+    const {deletePublisher, loading: deletingPublisher} = useDeletePublisher()
+    const {loading: gettingPublishers, publishers=[], error} = useGetAllPublishers()
+    const {loading: gettingCertificates, certificates=[], error: errorCertificates} = useGetAllCertificates()
     const {searchCertificates, loading: searchingCertificate} = useGetSearchCertificates()
     const {searchCertificatesByPublisher, loading: searchingCertificateByPublisher} = useGetSearchCertificatesByPublisher()
 
@@ -82,19 +81,16 @@ function Certificate() {
     // Upsert
     const upsertPublisher = async () => {
         if (publisher.name !== "") {
-            let {loading: adding, data, errors} = await addPublisher({
+            let {data, errors} = await addPublisher({
                 variables: publisher
             })
-            adding && setLoading(true)
             if(errors) { 
-                setLoading(false)
                 setErr({
                     open: true,
                     msg: errors
                 })
             }
             if (data?.addPublisher?.length !== 0) {
-                setLoading(false)
                 setDisplayPublishers(data?.addPublisher)
                 setPublisher({open: false, id: '', name: ''})
                 setAdd({open: false, name: ''})
@@ -165,7 +161,7 @@ function Certificate() {
     return (
         <>
             <div className='category'>
-              {gettingPublishers ? <div style={{height: "200px", display: "grid", placeContent: "center"}}><img style={{width: "40px"}} src={loader} alt=''/></div> :
+              {gettingPublishers || deletingPublisher ? <div style={{height: "200px", display: "grid", placeContent: "center"}}><img style={{width: "40px"}} src={loader} alt=''/></div> :
                 <>
                     <div className="c-title">
                         <p>Publishers</p>
@@ -191,10 +187,10 @@ function Certificate() {
                             />
                             <p>Publisher</p>
                             <div className="ca-inp">
-                                <input type="text" onKeyDown={e => e.key === 'Enter' && upsertPublisher()} placeholder='New Category' value={publisher.name} onChange={e => setPublisher({...publisher, name: e.target.value})} />
+                                <input type="text" onKeyDown={e => e.key === 'Enter' && upsertPublisher()} placeholder='New Publisher' value={publisher.name} onChange={e => setPublisher({...publisher, name: e.target.value})} />
                                 <img onClick={() => upsertPublisher()} src="https://img.icons8.com/ios-glyphs/30/ffffff/plus-math.png" alt='' />
                             </div>
-                            {load && <div><img style={{width: "30px"}} src={spinner} alt=''/></div>}
+                            {addingPublisher && <div style={{width: "100%", display: "grid", placeContent: "center"}}><img style={{width: "30px", marginTop: "20px"}} src={loader} alt=''/></div>}
                         </div>
                     </div>
                 )}
@@ -295,8 +291,8 @@ function Certificate() {
                         </div>
                         <div className="ce-body">
                             <p>{publisher.name}</p>
-                            <input type="text" placeholder='Category' value={publisher.name} onChange={e => setPublisher({ ...publisher, name: e.target.value })} />
-                            {load && <div><img style={{width: "30px"}} src={spinner} alt=''/></div>}
+                            <input type="text" onKeyDown={e => e.key === 'Enter' && upsertPublisher()} placeholder='Category' value={publisher.name} onChange={e => setPublisher({ ...publisher, name: e.target.value })} />
+                            {addingPublisher && <div style={{width: "100%", display: "grid", placeContent: "center"}}><img style={{width: "30px", marginTop: "20px"}} src={loader} alt=''/></div>}
                             <button onClick={() => upsertPublisher()}>Update</button>
                         </div>
                     </div>

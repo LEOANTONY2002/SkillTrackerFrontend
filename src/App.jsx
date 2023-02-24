@@ -16,14 +16,15 @@ import Admins from './pages/admin/Admins';
 
 function App() {
   const { user } = useSelector((state) => state.user)
-  let path = window.location.pathname || ""
   const [admin, setAdmin] = useState(true)
   const navigate = useNavigate()
 
   console.log(user)
 
   useEffect(() => {
-    admin ? navigate("/admin"): navigate("/employee")
+    if (user?.hasOwnProperty("email") && user?.isAdmin) {
+      admin ? navigate("/admin"): navigate("/employee")
+    }
   }, [admin])
 
   return (
@@ -37,12 +38,12 @@ function App() {
               : <Route path='/employee/login' element={<Login />} />
             } */}
             <Route path='/' element={<Home />} />
-            <Route path='/admin/admins' element={<Admins />} />
-            <Route path='/admin/certificate' element={<Certificate />} />
-            <Route path='/admin/employee' element={<Employee />} />
-            <Route path='/admin/skill' element={<Skill />} />
-            <Route path='/admin/category' element={<Category />} />
-            <Route path='/admin' element={<Dashboard />} />
+            {user?.isAdmin && <Route path='/admin/admins' element={<Admins />} />}
+            {user?.isAdmin && <Route path='/admin/certificate' element={<Certificate />} />}
+            {user?.isAdmin && <Route path='/admin/employee' element={<Employee />} />}
+            {user?.isAdmin && <Route path='/admin/skill' element={<Skill />} />}
+            {user?.isAdmin && <Route path='/admin/category' element={<Category />} />}
+            {user?.isAdmin && <Route path='/admin' element={<Dashboard />} />}
 
             <Route path='/employee' element={<Home />} />
             <Route path='/employee/profile' element={<Profile />} />

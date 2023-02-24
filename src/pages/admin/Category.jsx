@@ -9,7 +9,6 @@ import './Category.css'
 import Nav from './Nav'
 import ReactApexChart from "react-apexcharts"
 import loader from '../../assets/loader.svg'
-import spinner from '../../assets/spinner.gif'
 import { useGetAllCategories } from '../../graphql/query/useGetAllCategories'
 
 
@@ -31,17 +30,26 @@ function Category() {
     word: "",
     categories: []
   })
+  const {categories} = useSelector(state => state.admin)
   const [load, setLoading] = useState(false)
   const [displayCategories, setDisplayCategories] = useState([])
   const dispatch = useDispatch()
-  const {loading: gettingCategories, categories=[], error: errorCategories} = useGetAllCategories()
+  const {loading: gettingCategories, categories:cloudCategories=[], error: errorCategories} = useGetAllCategories()
   const {addCategory, loading: addingCategory} = useAddCategory()
   const {deleteCategory, loading: deletingCategory} = useDeleteCategory()
   const {searchCategories, loading: searchingCategory} = useGetSearchCategories()
 
   console.log(categories)
 
-    // DisplaySkills and Error corrections
+  // DisplaySkills and Error corrections
+  useEffect(() => {
+    if (cloudCategories?.length !== 0) {
+      setDisplayCategories(cloudCategories)
+      dispatch(getCategories(cloudCategories))
+      setErr({open: false, msg: ""})
+    }
+  }, [cloudCategories])
+
   useEffect(() => {
     if (categories?.length !== 0) {
       setDisplayCategories(categories)
@@ -61,21 +69,18 @@ function Category() {
     }
   }, [displayCategories])
 
-    // Category Functions
-    // Upsert
+  // Category Functions
+  // Upsert
   const upsertCategory = async () => {
     if (category.name !== "") {
       let {data} = await addCategory({
           variables: category
       })
-      if (addingCategory) setLoading(true)
       if (data?.addCategory?.length !== 0) {
-        setLoading(false)
         dispatch(getCategories(data?.addCategory))
+        setDisplayCategories(data?.addCategory)
         setCategory({open: false, id: '', name: ''})
         setAdd({open: false, name: ''})
-      } else {
-        setLoading(false)
       }
     } else {
       setErr({
@@ -87,21 +92,18 @@ function Category() {
 
   // Delete
   const deleteCat = async (id) => {
-      const { data } = await deleteCategory({
-          variables: {id}
+    const { data } = await deleteCategory({
+        variables: {id}
+    })
+    if (data?.deleteCategory !== 0) {
+      setDisplayCategories(data?.deleteCategory)
+      setCategory({open: false, id: '', name: ''})
+    } else {
+      setErr({
+        open: true,
+        msg: "Something went wrong!"
       })
-      if (deletingCategory) setLoading(true)
-      if (data?.deleteCategory !== 0) {
-        setLoading(false)
-        dispatch(getCategories(data?.deleteCategory))
-        setCategory({open: false, id: '', name: ''})
-      } else {
-        setLoading(false)
-        setErr({
-          open: true,
-          msg: "Something went wrong!"
-        })
-      }
+    }
   }
 
   // Search
@@ -124,7 +126,6 @@ function Category() {
         msg: "Enter search field!"
       })
     }
-
   }
 
   // Ascending
@@ -200,128 +201,129 @@ function Category() {
         }
       },
     },
-};
+  };
 
-    return (
-        <>
-          {gettingCategories ? <div style={{width: "100%", height: "100vh", display: "grid", placeContent: "center"}}><img style={{width: "40px"}} src={loader} alt=''/></div> :
-            <div className='category'>
-                <div className="c-title">
-                    <p>Categories</p>
-                    <span></span>
+  return (
+    <>
+      {gettingCategories ? <div style={{width: "100%", height: "100vh", display: "grid", placeContent: "center"}}><img style={{width: "40px"}} src={loader} alt=''/></div> :
+        <div className='category'>
+            <div className="c-title">
+                <p>Categories</p>
+                <span></span>
+            </div>
+            <div className="s-icon" onClick={() => setAdd({open: true})}>
+                <p>Add New</p>
+                <img
+                  className="sIcon"
+                  src="https://img.icons8.com/ios-glyphs/50/fc3737/plus-math.png"
+                  alt=""
+                />
+            </div>
+            
+            {add.open && (
+                <div className="add">
+                    <div className="c-add">
+                        <img
+                            onClick={() => setAdd({ open: false, name: "" })}
+                            src="https://img.icons8.com/ios/48/fc3737/delete-sign--v1.png"
+                            alt=""
+                        />
+                        <p>Category</p>
+                        <div className="ca-inp">
+                            <input type="text" onKeyDown={e => e.key === 'Enter' && upsertCategory()} placeholder='New Category' value={category.name} onChange={e => setCategory({...category, name: e.target.value})} />
+                            <img onClick={() => upsertCategory()} src="https://img.icons8.com/ios-glyphs/30/ffffff/plus-math.png" alt='' />
+                        </div>
+                    </div>
+                    {addingCategory && <img style={{width: "30px", display: "grid", placeContent: "center"}} src={loader} alt=''/>}
                 </div>
-                <div className="s-icon" onClick={() => setAdd({open: true})}>
-                    <p>Add New</p>
+            )}
+            
+            <div className="search">
+                <div className="sh-body">
+                    <input type="text" onKeyDown={e => e.key === 'Enter' && searchCategory()} placeholder="Search Categories..." value={search.word} onChange={(e) => setSearch({...search, word: e.target.value})} required />
                     <img
-                        className="sIcon"
-                        src="https://img.icons8.com/ios-glyphs/50/fc3737/plus-math.png"
-                        alt=""
+                      onClick={() => searchCategory()}
+                      src="https://img.icons8.com/ios-glyphs/30/fc3737/search.png"
+                      alt=""
                     />
                 </div>
-                
-                {add.open && (
-                    <div className="add">
-                        <div className="c-add">
-                            <img
-                                onClick={() => setAdd({ open: false, name: "" })}
-                                src="https://img.icons8.com/ios/48/fc3737/delete-sign--v1.png"
-                                alt=""
-                            />
-                            <p>Category</p>
-                            <div className="ca-inp">
-                                <input type="text" onKeyDown={e => e.key === 'Enter' && upsertCategory()} placeholder='New Category' value={category.name} onChange={e => setCategory({...category, name: e.target.value})} />
-                                <img onClick={() => upsertCategory()} src="https://img.icons8.com/ios-glyphs/30/ffffff/plus-math.png" alt='' />
-                            </div>
-                        </div>
-                    </div>
-                )}
-                
-                <div className="search">
-                    <div className="sh-body">
-                        <input type="text" onKeyDown={e => e.key === 'Enter' && searchCategory()} placeholder="Search Categories..." value={search.word} onChange={(e) => setSearch({...search, word: e.target.value})} required />
-                        <img
-                          onClick={() => searchCategory()}
-                          src="https://img.icons8.com/ios-glyphs/30/fc3737/search.png"
-                          alt=""
-                        />
-                    </div>
-                    <div className="sh-filter">
-                        <img src="https://img.icons8.com/fluency-systems-regular/48/null/empty-filter.png" alt=""/>
-                        <span style={{marginLeft: "-10px"}}>Filter:  </span>
-                        <p 
-                        onClick={() => {
-                            setSearch({...search, word: "", categories: []});
-                            setDisplayCategories(categories);
-                        }}
-                        style={displayCategories === categories ? {backgroundColor: "red", color: "white"} : {}}
-                        >All</p>
-                        <img onClick={() => ascendingCategory()} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/sort-alpha-up.png" alt=""/>
-                        <img onClick={() => descendingCategory()} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/alphabetical-sorting-2.png" alt=""/>
-                    </div>
+                <div className="sh-filter">
+                    <img src="https://img.icons8.com/fluency-systems-regular/48/null/empty-filter.png" alt=""/>
+                    <span style={{marginLeft: "-10px"}}>Filter:  </span>
+                    <p 
+                    onClick={() => {
+                        setSearch({...search, word: "", categories: []});
+                        setDisplayCategories(categories);
+                    }}
+                    style={displayCategories === categories ? {backgroundColor: "red", color: "white"} : {}}
+                    >All</p>
+                    <img onClick={() => ascendingCategory()} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/sort-alpha-up.png" alt=""/>
+                    <img onClick={() => descendingCategory()} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/alphabetical-sorting-2.png" alt=""/>
                 </div>
+            </div>
 
-                {gettingCategories && <img style={{width: "40px"}} src={loader} alt=''/>}
+            {gettingCategories && <img style={{width: "40px"}} src={loader} alt=''/>}
 
-                {searchingCategory ? <div><img style={{width: "40px", height: "200px", display: "grid", placeContent: "center"}} src={loader} alt=''/></div> :
-                  (displayCategories.length !== 0) ? 
-                  <div className="c-list">
-                    {displayCategories.map(c => (
-                        <div className="cl-cat" key={c?.id}>
-                            <div className="cl-head">
-                                <img src="https://img.icons8.com/fluency-systems-filled/48/ffffff/category.png" alt='' />
-                                <div>
-                                    <p>{c?.name}</p>
-                                    <img onClick={() => setCategory({
-                                        open: true,
-                                        id: c?.id,
-                                        name: c?.name
-                                    })} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/pencil.png" alt='' />
-                                    <img onClick={() => deleteCat(c?.id)} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/delete.png" alt='' />
-                                </div>
-                            </div>
-                            <div className="cl-body">
-                                {c?.skills?.length !== 0 && <span style={{color: "black", marginTop: 20, flex: 0.1}}>skills</span>}
-                                <div style={{display: "flex", flexWrap: "wrap", flex: 0.9}}>
-                                  {c?.skills?.map(s => (
-                                      s && <p>{s?.skill?.name}</p>
-                                  ))}
-                                </div>
+            {searchingCategory ? <div><img style={{width: "40px", height: "200px", display: "grid", placeContent: "center"}} src={loader} alt=''/></div> :
+              (displayCategories.length !== 0) ? 
+              <div className="c-list">
+                {displayCategories.map(c => (
+                    <div className="cl-cat" key={c?.id}>
+                        <div className="cl-head">
+                            <img src="https://img.icons8.com/fluency-systems-filled/48/ffffff/category.png" alt='' />
+                            <div>
+                                <p>{c?.name}</p>
+                                <img onClick={() => setCategory({
+                                    open: true,
+                                    id: c?.id,
+                                    name: c?.name
+                                })} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/pencil.png" alt='' />
+                                <img onClick={() => deleteCat(c?.id)} src="https://img.icons8.com/fluency-systems-regular/48/fc3737/delete.png" alt='' />
                             </div>
                         </div>
-                    ))}
-                    {deletingCategory && <img style={{width: "40px"}} src={loader} alt=''/>}
-                    <div style={{width: "70vw", margin: "30px 0"}} className="chart">
-                      <ReactApexChart options={chartData.options} series={chartData.series} type="area" height={150} />
+                        <div className="cl-body">
+                            {c?.skills?.length !== 0 && <span style={{color: "black", marginTop: 20, flex: 0.1}}>skills</span>}
+                            <div style={{display: "flex", flexWrap: "wrap", flex: 0.9}}>
+                              {c?.skills?.map(s => (
+                                  s && <p>{s?.skill?.name}</p>
+                              ))}
+                            </div>
+                        </div>
                     </div>
-                  </div> : <p style={{color: "red", marginTop: "30px"}}>No records found!</p>}
-            </div>
-          }
+                ))}
+                {deletingCategory && <img style={{width: "40px"}} src={loader} alt=''/>}
+                <div style={{width: "70vw", margin: "30px 0"}} className="chart">
+                  <ReactApexChart options={chartData.options} series={chartData.series} type="area" height={150} />
+                </div>
+              </div> : <p style={{color: "red", marginTop: "30px"}}>No records found!</p>}
+        </div>
+      }
 
-          {category.open && (
-              <div className='c-edit'>
-                  <div>
-                      <div className="ce-head">
-                          <img src="https://img.icons8.com/fluency-systems-filled/48/ffffff/category.png" alt='' />
-                          <p>Edit Category</p>
-                          <img onClick={() => setCategory({ open: false, id: '', name: '' })} src="https://img.icons8.com/ios/48/fc3737/delete-sign--v1.png" alt='' />
-                      </div>
-                      <div className="ce-body">
-                          <p>{category.name}</p>
-                          <input type="text" placeholder='Category' onKeyDown={e => e.key === 'Enter' && upsertCategory()} value={category.name} onChange={e => setCategory({ ...category, name: e.target.value })} />
-                          <button disabled={load} onClick={() => upsertCategory()}>Update</button>
-                      </div>
-                      {load && <div><img style={{width: "30px"}} src={spinner} alt=''/></div>}
+      {category.open && (
+          <div className='c-edit'>
+              <div>
+                  <div className="ce-head">
+                      <img src="https://img.icons8.com/fluency-systems-filled/48/ffffff/category.png" alt='' />
+                      <p>Edit Category</p>
+                      <img onClick={() => setCategory({ open: false, id: '', name: '' })} src="https://img.icons8.com/ios/48/fc3737/delete-sign--v1.png" alt='' />
+                  </div>
+                  <div className="ce-body">
+                      <p>{category.name}</p>
+                      <input type="text" placeholder='Category' onKeyDown={e => e.key === 'Enter' && upsertCategory()} value={category.name} onChange={e => setCategory({ ...category, name: e.target.value })} />
+                      {addingCategory && <img style={{width: "30px", display: "grid", placeContent: "center"}} src={loader} alt=''/>}
+                      <button disabled={load} onClick={() => upsertCategory()}>Update</button>
                   </div>
               </div>
-          )}
+          </div>
+      )}
 
-          {err.open && (
-              <Error err={err} setErr={setErr} />
-          )}
+      {err.open && (
+          <Error err={err} setErr={setErr} />
+      )}
 
-          <Nav />
-        </>
-    )
+      <Nav />
+    </>
+  )
 }
 
 export default Category

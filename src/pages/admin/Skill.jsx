@@ -9,13 +9,14 @@ import "./Category.css";
 import Nav from "./Nav";
 import "./Skill.css";
 import ReactApexChart from "react-apexcharts"
-import spinner from '../../assets/spinner.gif'
 import loader from '../../assets/loader.svg'
 import { useGetAllSkills } from "../../graphql/query/useGetAllSkills";
+import { useGetAllCategories } from "../../graphql/query/useGetAllCategories";
 
 
 function Skill() {
-  const { categories } = useSelector((state) => state.admin);
+  const {loading: gettingCategories, categories=[]} = useGetAllCategories()
+  const {skills} = useSelector(state => state.admin)
   const [displaySkills, setDisplaySkills] = useState([])
   const [skill, setSkill] = useState({
     open: false,
@@ -38,7 +39,7 @@ function Skill() {
     skills: []
   })
   const dispatch = useDispatch();
-  const {loading: gettingSkills, skills: skills=[], error: errorSkills} = useGetAllSkills()
+  const {loading: gettingSkills, cloudSkills=[], error: errorSkills} = useGetAllSkills()
   const {addSkill, loading: addingSkill, error: errorAdd} = useAddSkill()
   const {updateSkill, loading: updatingSkill, error: errorUpdate} = useUpdateSkill()
   const {deleteSkill, loading: deletingSkill, error: errorDelete} = useDeleteSkill()
@@ -46,9 +47,17 @@ function Skill() {
   const [activeIndex, setActiveIndex] = useState(null);
   const [load, setLoading] = useState(false)
 
-  console.log(displaySkills);
+  console.log(skills);
 
   // DisplaySkills and Error corrections
+  useEffect(() => {
+    if (cloudSkills?.length !== 0) {
+      setDisplaySkills(cloudSkills)
+      dispatch(getSkills(cloudSkills))
+      setErr({open: false, msg: ""})
+    }
+  }, [cloudSkills])
+
   useEffect(() => {
     if (skills?.length !== 0) {
       setDisplaySkills(skills)
@@ -67,7 +76,6 @@ function Skill() {
       setErr({open: false, msg: ""})
     }
   }, [displaySkills])
-
 
   // Skill Functions
 
@@ -90,7 +98,7 @@ function Skill() {
           name: "",
           categoryId: ""
         });
-        setDisplaySkills(skills)
+        setDisplaySkills(data?.addSkill)
         setLoading(false)
       }
       if (errorAdd) {
@@ -127,7 +135,7 @@ function Skill() {
         name: "",
         categoryId: ""
       });
-      setDisplaySkills(skills)
+      setDisplaySkills(data?.editSkill)
       setLoading(false)
     }
     if (errorUpdate) {
@@ -312,7 +320,7 @@ function Skill() {
                     </span>
                   ))}
                 </div>
-                {load && <div><img style={{width: "120px"}} src={loader} alt=''/></div>}
+                {addingSkill && <div style={{width: "100%", display: "grid", placeContent: "center"}}><img style={{width: "30px"}} src={loader} alt=''/></div>}
                 <div className="ce-sub" onClick={() => addNewSkill()}>
                   <img
                       src="https://img.icons8.com/ios-glyphs/30/ffffff/plus-math.png"
@@ -349,7 +357,7 @@ function Skill() {
           </div>
         </div>
 
-        {searchingSkills || gettingSkills ? <div style={{height: "200px"}}><img style={{width: "40px", display: "grid", placeContent: "center"}} src={loader} alt=''/></div>     :
+        {searchingSkills || gettingSkills || deletingSkill ? <div style={{height: "200px"}}><img style={{width: "40px", display: "grid", placeContent: "center"}} src={loader} alt=''/></div>     :
           
           (displaySkills?.length !== 0) ? <div className="c-list">
             {displaySkills.map((s) => (

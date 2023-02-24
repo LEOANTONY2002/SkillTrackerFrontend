@@ -12,7 +12,8 @@
   margin: auto;
   margin-left: 90px;
   margin-right: 20px;
-  margin-top: 30px !important;
+  margin-top: 50px !important;
+  margin-bottom: 30px !important;
 }
 .contents {
   margin-top: 20px !important;
@@ -105,9 +106,11 @@
 .d-sync h5 {
   color: grey;
   margin-top: 5px;
+  display: flex;
 }
 .d-sync > h5 > span {
   color: #ff8888;
+  margin-left: 10px;
 }
 .d-sync div {
   display: flex;

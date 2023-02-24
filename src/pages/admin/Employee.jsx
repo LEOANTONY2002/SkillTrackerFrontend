@@ -9,10 +9,6 @@ import Nav from "./Nav";
 import { useGetAllEmployees } from "../../graphql/query/useGetAllEmployees";
 
 function Employee() {
-  const [profile, setProfile] = useState({
-    open: false,
-    employee: [],
-  });
   const [zoom, setZoom] = useState({
     open: false,
     cert: {}
