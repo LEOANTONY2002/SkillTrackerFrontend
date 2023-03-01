@@ -46,15 +46,15 @@ export const useGetEmployee = () => {
 }
 
 const GET_LAST_SYNC = gql`
-        query LastSync {
-            lastSync {
-                id
-                lastSync
-                updatedAt
-                createdAt
-            }
+    query LastSync {
+        lastSync {
+            id
+            lastSync
+            updatedAt
+            createdAt
         }
-    `;
+    }
+`;
 
 
 export const useGetLastSync = () => {

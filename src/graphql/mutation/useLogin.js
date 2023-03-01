@@ -3,6 +3,7 @@ import { gql, useMutation } from "@apollo/client";
 const GET_EMPLOYEE = gql`
         mutation Mutation($email: String!){
             employeeLogin(email: $email) {
+                accessToken
                 id
                 email
                 name
@@ -59,6 +60,7 @@ export const useLogin = () => {
 const GET_EMPLOYEE_WITH_EMAIL_PASSWORD = gql`
         mutation Mutation($email: String!, $password: String!){
             employeeLoginWithPassword(email: $email, password: $password) {
+                accessToken
                 id
                 email
                 name

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './Login.css'
@@ -10,6 +10,7 @@ import Error from '../../components/Error';
 import { useNavigate } from 'react-router-dom';
 import { useLogin, useLoginWithPassword, useResetPassword } from '../../graphql/mutation/useLogin';
 import { useSignup } from '../../graphql/mutation/useSignup';
+import jwtDecode from 'jwt-decode'
 
 function Login() {
     const { user } = useSelector((state) => state.user)
@@ -36,6 +37,72 @@ function Login() {
 
     console.log(newPassword)
 
+    useEffect(() => {
+        window.google.accounts.id.initialize({
+            client_id: "321676839735-tr2scc32p0hlaeoe1g9ads9jg5rm1e1r.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+          });
+          window.google.accounts.id.renderButton(
+            document.getElementById("gl"),
+            { theme: "outline", size: "large" }  // customization attributes
+          );
+          window.google.accounts.id.prompt(); //
+    }, [])
+
+    const handleCredentialResponse = async (response) => {
+        const decoded = await jwtDecode(response.credential)
+        console.log(decoded);
+        let email = decoded?.email
+        if (email === '' || email === null) {
+            setErr({
+                open: true,
+                msg: "Enter Email!"
+            })
+        } else if (email.slice(-13) !== "@changecx.com") setErr({
+            open: true,
+            msg: "Enter Organization Email!"
+        })
+        else {
+            try {
+                await onLogin({
+                    variables: {
+                        email
+                    }
+                }).then(({ data, error }) => {
+                    console.log("EMPLOYEE", data)
+                    if (data?.employeeLogin !== null) {
+                            dispatch(getUser(data?.employeeLogin))
+                            dispatch(getUserAccessToken(data?.employeeLogin?.accessToken || ""))
+                            if (data?.employeeLogin?.isAdmin === true) {
+                                navigate('/admin')
+                            } else {
+                                navigate('/employee')
+                            }
+                            // dispatch(getUserAccessToken(data.accessToken))
+                            setLogin({
+                                email: "",
+                                password: ""
+                            })
+                        
+                    } else setErr({ open: true, msg: "Invalid Credentials" })
+
+                    if (error) {
+                        setErr({open: error.message})
+                        console.log(error)
+                    }
+                }).catch(error => {
+                    console.log(error)
+                })
+                    
+            } catch ({ response }) {
+                setErr({
+                    open: true,
+                    msg: response.data
+                })
+            }
+        }
+    }
+
     const authenticate = async () => {
         if (login.email === '' || login.email === null) {
             setErr({
@@ -56,6 +123,7 @@ function Login() {
                     console.log("EMPLOYEE", data)
                     if (data?.employeeLogin !== null) {
                             dispatch(getUser(data?.employeeLogin))
+                            dispatch(getUserAccessToken(data?.employeeLogin?.accessToken || ""))
                             if (data?.employeeLogin?.isAdmin === true) {
                                 navigate('/admin')
                             } else {
@@ -194,10 +262,28 @@ function Login() {
                             <div className="lb-up">
                                 <img src="https://img.icons8.com/fluency-systems-regular/90/ffffff/group-background-selected.png" alt="" />
                             </div>
-                            <input type="text" placeholder='Email' value={login.email} onChange={e => setLogin({ ...login, email: e.target.value })} />
+                            <input type="text" placeholder='Email' onKeyDown={e => e.key === "Enter" ? !toggle ? authenticate() : '' : ''} value={login.email} onChange={e => setLogin({ ...login, email: e.target.value })} />
                             {toggle && <input type="password" placeholder='Password' value={login.password} onChange={e => setLogin({ ...login, password: e.target.value })} />}
                             {(loading || loggingIn) && <img width={40} src={loader} alt="" /> }
                             <button disabled={loading || loggingIn} onClick={toggle ? () => authenticateWithEmailAndPassword() : () => authenticate()}>Login</button>
+                            {/* <div id="g_id_onload"
+                                data-client_id="321676839735-tr2scc32p0hlaeoe1g9ads9jg5rm1e1r.apps.googleusercontent.com"
+                                data-context="signin"
+                                data-ux_mode="popup"
+                                data-login_uri="http://localhost:3000"
+                                data-auto_select="true"
+                                data-itp_support="true">
+                            </div>
+
+                            <div className="g_id_signin"
+                                data-type="standard"
+                                data-shape="pill"
+                                data-theme="outline"
+                                data-text="signin_with"
+                                data-size="medium"
+                                data-logo_alignment="left">
+                            </div> */}
+                            <div id="gl"></div>
                             <p>Login with <span onClick={() => setToggle(!toggle)}>{toggle ? 'Email' : "Email and Password"}</span></p>
                         </div>
                     </div>

@@ -13,13 +13,14 @@ import Category from './pages/admin/Category';
 import Dashboard from './pages/admin/Dashboard';
 import Certificate from './pages/admin/Certificate';
 import Admins from './pages/admin/Admins';
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 
 function App() {
-  const { user } = useSelector((state) => state.user)
+  const { user, accessToken } = useSelector((state) => state.user)
   const [admin, setAdmin] = useState(true)
   const navigate = useNavigate()
 
-  console.log(user)
+  console.log(accessToken)
 
   useEffect(() => {
     if (user?.hasOwnProperty("email") && user?.isAdmin) {
@@ -27,8 +28,17 @@ function App() {
     }
   }, [admin])
 
+  const client = new ApolloClient({
+    uri: 'http://localhost:4001/graphql',
+    cache: new InMemoryCache(),
+    headers: {
+      authorization: accessToken || ""
+    }
+  });
+
   return (
     <>
+    <ApolloProvider client={client}>
         <div className="App">
           <Routes>
             {/* {user.length !== 0 ?
@@ -57,7 +67,8 @@ function App() {
             <img onClick={() => setAdmin(true)} style={admin ? {background: "linear-gradient(120deg, #fc3737a4, red)", boxShadow: "0 2px 15px rgba(255, 170, 170, 0.717)"} : {}} src={`https://img.icons8.com/fluency-systems-regular/48/${admin ? 'ffffff' : 'fc3737'}/system-administrator-male.png`} alt='' />
             <img onClick={() => setAdmin(false)} style={!admin ? {background: "linear-gradient(120deg, #fc3737a4, red)", boxShadow: "0 2px 15px rgba(255, 170, 170, 0.717)"} : {}} src={`https://img.icons8.com/fluency-systems-regular/48/${!admin ? 'ffffff' : 'fc3737'}/group-background-selected.png`} alt='' />                   
           </div>
-        }      
+        }   
+        </ApolloProvider>   
     </>
   );
 }

@@ -45,11 +45,15 @@ function Dashboard() {
         console.log("done", admin)
     }, [gettingCategories, getEmployees, gettingSkills, gettingCertificates])
 
+    useEffect(() => {
+        getLastSync()
+    }, [])
+
     const sync = async () => {
         let {data} = await syncEmployeesData()
         if (data?.syncEmployeesData?.length !== 0) {
             let {data: ls} = await getLastSync()
-    console.log(ls)
+            console.log(ls)
             dispatch(getEmployees(data?.syncEmployeesData))
         }
         if (syncError) {
@@ -128,7 +132,7 @@ function Dashboard() {
         }],
         options: {
           chart: {
-            height: 50,
+            height: 150,
             type: 'area',
             zoom: {
               enabled: true
