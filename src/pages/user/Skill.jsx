@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Error from "../../components/Error";
@@ -7,11 +6,11 @@ import { useAddEmployeeSkill } from "../../graphql/mutation/useAddEmployeeSkill"
 import { useDeleteEmployeeSkill } from "../../graphql/mutation/useDeleteEmployeeSkill";
 import { useGetAllSkills } from "../../graphql/query/useGetAllSkills";
 import { getUser } from "../../redux/slices/userSlice";
-import loader from '../../assets/loader.svg'
+import loader from '../../assets/loader.svg';
 import "./Skill.css";
 
 function Skill() {
-  const { user, accessToken } = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.user);
   const {skills, loading: getttingAllSkills} = useGetAllSkills()
   const [skill, setSkill] = useState({
     open: false,
@@ -40,7 +39,7 @@ function Skill() {
     let isExisting = user?.employeeSkills?.find(s => s?.skillId === cos?.id)
     console.log("s.skillID", isExisting?.skillId)
 
-    let {loading: addingES, data: addES, errors} = await esAdd({
+    let {data: addES, errors} = await esAdd({
       variables: {
         employeeId: user?.id,
         coskillId,

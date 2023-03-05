@@ -15,7 +15,7 @@ import { useGetAllCategories } from "../../graphql/query/useGetAllCategories";
 
 
 function Skill() {
-  const {loading: gettingCategories, categories=[]} = useGetAllCategories()
+  const {categories=[]} = useGetAllCategories()
   const {skills} = useSelector(state => state.admin)
   const [displaySkills, setDisplaySkills] = useState([])
   const [skill, setSkill] = useState({
@@ -39,7 +39,7 @@ function Skill() {
     skills: []
   })
   const dispatch = useDispatch();
-  const {loading: gettingSkills, cloudSkills=[], error: errorSkills} = useGetAllSkills()
+  const {loading: gettingSkills, cloudSkills=[]} = useGetAllSkills()
   const {addSkill, loading: addingSkill, error: errorAdd} = useAddSkill()
   const {updateSkill, loading: updatingSkill, error: errorUpdate} = useUpdateSkill()
   const {deleteSkill, loading: deletingSkill, error: errorDelete} = useDeleteSkill()
@@ -83,7 +83,6 @@ function Skill() {
   const addNewSkill = async () => {
     if (skill.name !== "" || skill.categoryId !== "") {
       const { data } = await addSkill({variables: skill})
-      if (addingSkill) setLoading(true)
       if (data?.addSkill?.length !== 0) {
         dispatch(getSkills(data.addSkill));
         setSkill({
@@ -99,17 +98,14 @@ function Skill() {
           categoryId: ""
         });
         setDisplaySkills(data?.addSkill)
-        setLoading(false)
       }
       if (errorAdd) {
-        setLoading(false)
         setErr({
           open: true,
           msg: errorAdd,
         });
       }
     } else {
-      setLoading(false)
       setErr({
         open: true,
         msg: "Fill all the fields!",
@@ -120,7 +116,6 @@ function Skill() {
   // Update
   const editSkill = async () => {
     const { data } = await updateSkill({variables: {...skill}})
-    if (updatingSkill) setLoading(true)
     if (data?.editSkill?.length !== 0) {
       dispatch(getSkills(data.editSkill));
       setSkill({
@@ -136,10 +131,8 @@ function Skill() {
         categoryId: ""
       });
       setDisplaySkills(data?.editSkill)
-      setLoading(false)
     }
     if (errorUpdate) {
-      setLoading(false)
         setErr({
           open: true,
           msg: errorUpdate,
@@ -150,7 +143,6 @@ function Skill() {
   // Delete
   const delSkill = async (coskillId, id) => {
     const { data } = await deleteSkill({variables: {coskillId, id}})
-    if (deletingSkill) setLoading(true)
     if (data?.deleteSkill?.length !== 0) {
       dispatch(getSkills(data.deleteSkill));
       setSkill({
@@ -160,10 +152,8 @@ function Skill() {
         categoryId: "",
       });
       setDisplaySkills(skills)
-      setLoading(false)
     }
     if (errorDelete) {
-      setLoading(false)
         setErr({
           open: true,
           msg: errorDelete,
@@ -177,23 +167,19 @@ function Skill() {
       const { data } = await searchSkills({
         variables: {word: search.word}
       })
-      if (searchingSkills) setLoading(true)
       if (data?.searchSkill?.length === 0) {
-        setLoading(false)
         setDisplaySkills([])
       } else {
         setLoading(false)
         setSearch({...search, skills: data?.searchSkill})
       }
       if (errorSearch) {
-        setLoading(false)
         setErr({
           open: true,
           msg: errorSearch,
         });
       }
     } else {
-      setLoading(false)
       setErr({
         open: true,
         msg: "Enter skill to search!"
@@ -263,6 +249,7 @@ function Skill() {
             ...displaySkills?.map(s => (s?.skill?.name))
         ],
         labels: {
+          show: false,
           hideOverlappingLabels: true,
         }
       },
@@ -320,8 +307,8 @@ function Skill() {
                     </span>
                   ))}
                 </div>
-                {addingSkill && <div style={{width: "100%", display: "grid", placeContent: "center"}}><img style={{width: "30px"}} src={loader} alt=''/></div>}
-                <div className="ce-sub" onClick={() => addNewSkill()}>
+                {addingSkill && <div style={{width: "100%", display: "grid", placeContent: "center", marginBottom: "-20px", marginTop: "10px"}}><img style={{width: "30px"}} src={loader} alt=''/></div>}
+                <div className="ce-sub" style={addingSkill ? {opacity: "0.4"} : {}} onClick={() => !addingSkill && addNewSkill()}>
                   <img
                       src="https://img.icons8.com/ios-glyphs/30/ffffff/plus-math.png"
                       alt=""
@@ -458,18 +445,20 @@ function Skill() {
               <div className="ce-cat">
                 {categories.map((c) => (
                   <span
+                    key={c?.id}
                     style={
-                      c.id === skill.categoryId
+                      c?.id === skill?.categoryId
                         ? { backgroundColor: "#fc3737", color: "white" }
                         : {}
                     }
                     onClick={() => setSkill({ ...skill, categoryId: c.id })}
                   >
-                    {c.name}
+                    {c?.name}
                   </span>
                 ))}
               </div>
-              <button onClick={() => editSkill()}>Update</button>
+              {updatingSkill && <div style={{width: "100%", display: "grid", placeContent: "center", marginBottom: "-20px", marginTop: "10px"}}><img style={{width: "30px"}} src={loader} alt=''/></div>}
+              <button disabled={updatingSkill} onClick={() => editSkill()}>Update</button>
             </div>
           </div>
         </div>

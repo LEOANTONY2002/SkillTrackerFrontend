@@ -11,9 +11,10 @@ import { useGetAllPublishers } from "../../graphql/query/useGetAllCertificates";
 import { useNavigate } from "react-router-dom";
 import loader from '../../assets/loader.svg'
 import Error from "../../components/Error";
+import { uploadToS3 } from "../../actions/uploadToS3";
 
 function Certificate() {
-    const { user, accessToken } = useSelector((state) => state.user);
+    const { user } = useSelector((state) => state.user);
     const [cert, setCert] = useState({
         open: false,
         id: "",
@@ -35,9 +36,9 @@ function Certificate() {
     })
     const dispatch = useDispatch();
     const [shrink, setShrink] = useState(true)
-    const {addCertificate} = useAddCertificate()
+    const {addCertificate, loading: addingCertificate} = useAddCertificate()
     const navigate = useNavigate()
-    const {loading: gettingPublishers, publishers: publishers=[], error} = useGetAllPublishers()
+    const {publishers: publishers=[], error} = useGetAllPublishers()
 
     console.log(cert);
 
@@ -48,28 +49,26 @@ function Certificate() {
     }, [])
 
     const getFiles = (p) => {
-        setCert({ ...cert, photo: p.base64 });
+        setCert({ ...cert, photo: p });
+        // setCert({ ...cert, photo: p.base64 });
     };
 
     const upload = async () => {
         if (cert.name !== ""  && cert.publisherId && cert.photo !== "") {
-            setLoading(true)
-            let {loading, data} = await addCertificate({
+            let p = await uploadToS3(cert.photo)
+            setCert({...cert, photo: p})
+            let { data} = await addCertificate({
                 variables: cert
             })
             dispatch(getUser(data?.addCertificate));
             setCert({ ...cert, open: false });
-            if (loading) setLoading(true)
             if (data?.errors) {
-                setLoading(false)
                 setErr({
                     open: true,
                     msg: error.message
                 })
             }
-            setLoading(false)
         } else {
-            setLoading(false)
             setErr({
                 open: true,
                 msg: "Fill all the fields!"
@@ -178,7 +177,7 @@ function Certificate() {
                                     type="date"
                                     onChange={(e) => setCert({ ...cert, expiry: e.target.value })}
                                 />
-                                {load && <div><img style={{width: "40px"}} src={loader} alt="" /></div> }
+                                {addingCertificate && <div><img style={{width: "40px"}} src={loader} alt="" /></div> }
                                 <button disabled={load} onClick={() => upload()}>Upload</button>
                             </div>
                         </div>

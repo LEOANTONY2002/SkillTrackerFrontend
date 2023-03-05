@@ -21,10 +21,10 @@ function Dashboard() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [load, setLoading] = useState(false)
-    const {loading: gettingEmployees, employees=[], error: errorEmployees} = useGetAllEmployees()
-    const {loading: gettingSkills, skills=[], error: errorSkills} = useGetAllSkills()
-    const {loading: gettingCategories, categories=[], error: errorCategories} = useGetAllCategories()
-    const {loading: gettingCertificates, certificates=[], error: errorCertificates} = useGetAllCertificates()
+    const {loading: gettingEmployees, employees=[]} = useGetAllEmployees()
+    const {loading: gettingSkills, skills=[]} = useGetAllSkills()
+    const {loading: gettingCategories, categories=[]} = useGetAllCategories()
+    const {loading: gettingCertificates, certificates=[]} = useGetAllCertificates()
     const {syncEmployeesData, loading: syncing, error: syncError} = useSyncEmployeesData()
     const {getLastSync, loading: gettingLastSync, data: lastSync=""} = useGetLastSync()
 
@@ -301,7 +301,7 @@ function Dashboard() {
                             )) : <div></div>}
                         </div>
                         <div className="chart">
-                            <ReactApexChart options={chartData.options} series={chartData.series} type="area" width={"100%"} height={200} />
+                            <ReactApexChart options={chartData.options} series={chartData.series} type="area" width={"100%"} height={150} />
                         </div>
                     </div>
                     

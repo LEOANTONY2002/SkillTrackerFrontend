@@ -1,6 +1,6 @@
 import './App.css';
 import React, { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import Home from './pages/user/Home';
 import { useSelector } from 'react-redux';
 import Login from './pages/user/Login';
@@ -14,13 +14,19 @@ import Dashboard from './pages/admin/Dashboard';
 import Certificate from './pages/admin/Certificate';
 import Admins from './pages/admin/Admins';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import Error from './pages/Error';
+import Cookies from 'js-cookie';
 
 function App() {
   const { user, accessToken } = useSelector((state) => state.user)
   const [admin, setAdmin] = useState(true)
   const navigate = useNavigate()
 
-  console.log(accessToken)
+  useEffect(() => {
+    const user = Cookies.get("user")
+    console.log("USER", user);
+    if (!user) navigate("/")
+  }, [])
 
   useEffect(() => {
     if (user?.hasOwnProperty("email") && user?.isAdmin) {
@@ -29,7 +35,7 @@ function App() {
   }, [admin])
 
   const client = new ApolloClient({
-    uri: 'http://localhost:4001/graphql',
+    uri: 'https://changecx-production.up.railway.app/',
     cache: new InMemoryCache(),
     headers: {
       authorization: accessToken || ""
@@ -60,6 +66,7 @@ function App() {
             <Route path='/employee/skill' element={<EmployeeSkill />} />
             <Route path='/employee/certificate' element={<EmployeeCertificate />} />
             <Route path='/employee/login' element={<Login />} />
+            <Route path='*' element={<Error />} />
           </Routes>
         </div>
         {(user?.hasOwnProperty("email") && user?.isAdmin) &&

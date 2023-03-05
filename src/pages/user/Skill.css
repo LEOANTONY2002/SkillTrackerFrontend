@@ -1,5 +1,13 @@
 .e-skill::-webkit-scrollbar {
-  display: none;
+  width: 5px;
+}
+.e-skill::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(255, 239, 239, 0.3);
+  background: #ffcfcf;
+  border-radius: 15px;
+}
+.e-skill::-webkit-scrollbar-thumb {
+  background: rgb(255, 255, 255);
 }
 
 .e-skill {

@@ -233,8 +233,8 @@ function Category() {
                             <input type="text" onKeyDown={e => e.key === 'Enter' && upsertCategory()} placeholder='New Category' value={category.name} onChange={e => setCategory({...category, name: e.target.value})} />
                             <img onClick={() => upsertCategory()} src="https://img.icons8.com/ios-glyphs/30/ffffff/plus-math.png" alt='' />
                         </div>
+                        {addingCategory && <div style={{width: "100%", display: "grid", placeContent: "center", marginBottom: "-20px", marginTop: "10px"}}><img style={{width: "30px"}} src={loader} alt=''/></div>}
                     </div>
-                    {addingCategory && <img style={{width: "30px", display: "grid", placeContent: "center"}} src={loader} alt=''/>}
                 </div>
             )}
             

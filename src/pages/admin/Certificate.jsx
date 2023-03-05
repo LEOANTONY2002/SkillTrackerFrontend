@@ -33,14 +33,13 @@ function Certificate() {
         open: false,
         cert: {}
     })
-    const [load, setLoading] = useState(false)
     const [displayCertificates, setDisplayCertificates] = useState([])
     const [displayPublishers, setDisplayPublishers] = useState([])
     const [selectedOptionPublisher, setSelectedOptionPublisher] = useState(null);
     const {addPublisher, loading: addingPublisher} = useAddPublisher()
     const {deletePublisher, loading: deletingPublisher} = useDeletePublisher()
-    const {loading: gettingPublishers, publishers=[], error} = useGetAllPublishers()
-    const {loading: gettingCertificates, certificates=[], error: errorCertificates} = useGetAllCertificates()
+    const {loading: gettingPublishers, publishers=[]} = useGetAllPublishers()
+    const {loading: gettingCertificates, certificates=[]} = useGetAllCertificates()
     const {searchCertificates, loading: searchingCertificate} = useGetSearchCertificates()
     const {searchCertificatesByPublisher, loading: searchingCertificateByPublisher} = useGetSearchCertificatesByPublisher()
 
@@ -100,13 +99,12 @@ function Certificate() {
                 open: true,
                 msg: "Enter a publisher name"
             })
-            setLoading(false)
         }
     }
 
     // Delete
     const delPublisher = async (id) => {
-        const { loading: deleting, data, error } = await deletePublisher({
+        const {data, error } = await deletePublisher({
             variables: {id}
         })
         setDisplayPublishers(data?.deletePublisher)
@@ -118,7 +116,7 @@ function Certificate() {
 
     // Search
     const searchCertificate = async () => {
-        const {loading, data, error} = await searchCertificates({
+        const {data} = await searchCertificates({
         variables: {word: search.word}
         })
         
@@ -132,7 +130,7 @@ function Certificate() {
 
     // Search by Publisher
     const searchCertificateByPublisher = async () => {
-        const {loading, data, error} = await searchCertificatesByPublisher({
+        const {data} = await searchCertificatesByPublisher({
         variables: {word: selectedOptionPublisher}
         })
         if (data?.searchCertificateByPublisher?.length === 0) {

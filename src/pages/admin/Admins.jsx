@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import Error from '../../components/Error'
-import { getEmployees } from '../../redux/slices/adminSlice'
 import './Category.css'
 import Nav from './Nav'
 import loader from '../../assets/loader.svg'
@@ -21,7 +20,6 @@ function Category() {
     open: false,
     msg: "",
   });
-  const [load, setLoading] = useState(false)
   const {manageAdmin, loading} = useManageAdmin()
   const {loading: gettingAdmins, admins=[]} = UseGetAllAdmins()
   const {loading: gettingEmployees, employees=[]} = useGetAllEmployees()
@@ -38,13 +36,10 @@ function Category() {
       let {data} = await manageAdmin({
           variables: admin
       })
-      if (loading) setLoading(true)
       if (data?.manageAdmin?.length !== 0) {
-        setLoading(false)
         setDisplayAdmins(data?.manageAdmin)
         setAdmin({open: false, id: '', isAdmin: null})
       } else {
-        setLoading(false)
       }
     } else {
       setErr({
@@ -61,13 +56,10 @@ function Category() {
             isAdmin: false
           }
       })
-      if (loading) setLoading(true)
       if (data?.manageAdmin?.length !== 0) {
-        setLoading(false)
         setDisplayAdmins(data?.manageAdmin)
         setAdmin({open: false, id: '', isAdmin: null})
       } else {
-        setLoading(false)
       }
   }
 
