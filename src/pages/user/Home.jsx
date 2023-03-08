@@ -1,9 +1,17 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import Nav from '../../components/Nav'
 import './Home.css'
 
 function Home() {
     const [shrink, setShrink] = useState(false)
+    const { user } = useSelector((state) => state.user)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (!user) navigate("/employee/login")
+    }, [])
 
     return (
         <div className="home">

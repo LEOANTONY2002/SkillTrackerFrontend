@@ -28,6 +28,7 @@ function Login() {
         msg: ''
     })
     const [toggle, setToggle] = useState(false)
+    const [msg, setMsg] = useState("")
     const [resetPassword, setResetPassword] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -111,46 +112,35 @@ function Login() {
             msg: "Enter Organization Email!"
         })
         else {
-            try {
-                await onLogin({
-                    variables: {
-                        email: login.email
-                    }
-                }).then(({ data }) => {
-                    console.log("EMPLOYEE", data)
-                    if (data?.employeeLogin !== null) {
-                            dispatch(getUser(data?.employeeLogin))
-                            dispatch(getUserAccessToken(data?.employeeLogin?.accessToken || ""))
-                            if (data?.employeeLogin?.isAdmin === true) {
-                                navigate('/admin')
-                            } else {
-                                navigate('/employee')
-                            }
-                            // dispatch(getUserAccessToken(data.accessToken))
-                            setLogin({
-                                email: "",
-                                password: ""
-                            })
-                        
-                    } else setErr({ open: true, msg: "Invalid Credentials" })
-
-                    
-                }).catch(error => {
-                    if (errorLogin) {
-                        setErr({open: true, msg: "Something went wrong!"})
-                    }
-                })
-
-                if (errorLogin) {
-                    setErr({open: true, msg: "Something went wrong!"})
+            onLogin({
+                variables: {
+                    email: login.email
                 }
+            }).then(({ data }) => {
+                console.log("EMPLOYEE", data)
+                if (data?.employeeLogin !== null) {
+                        
+                    if (data?.employeeLogin?.isNewEmployee === true) {
+                        setToggle(!toggle)
+                        setMsg("One Time Password has been sent your email")
+                    }
                     
-            } catch (error) {
-                setErr({
-                    open: true,
-                    msg: "Something went wrong!"
-                })
-            }
+                }
+            }).catch(() => {
+                if (errorLogin.message.includes("401")) {
+                    setErr({
+                        open: true,
+                        msg: "Account has already been activated!"
+                    })
+                    setToggle(!toggle)
+                }
+                if (errorLogin.message.includes("400")) {
+                    setErr({
+                        open: true,
+                        msg: "Email not found!"
+                    })
+                }
+            })
         }
     }
 
@@ -176,13 +166,13 @@ function Login() {
                             setResetPassword(true)
                         } else {
                             dispatch(getUser(data?.employeeLoginWithPassword))
+                            dispatch(getUserAccessToken(data?.employeeLoginWithPassword?.accessToken))
                             if (data?.employeeLoginWithPassword?.isAdmin === true) {
                                 navigate('/admin')
                             } else {
                                 navigate('/employee')
                             }
                         }
-                        // dispatch(getUserAccessToken(data.accessToken))
                         
                     } else setErr({ open: true, msg: "Invalid Credentials" })
 
@@ -235,7 +225,6 @@ function Login() {
 
     return (
         <>
-        {(errorLogin || errorLoginWithPassword) && setErr({open: true, msg: "Something went wrong!"})}
             {resetPassword ? 
                 <div className='login'>
                     <div>
@@ -264,11 +253,12 @@ function Login() {
                                 <img src="https://img.icons8.com/fluency-systems-regular/90/ffffff/group-background-selected.png" alt="" />
                             </div>
                             <input type="text" placeholder='Email' onKeyDown={e => e.key === "Enter" ? !toggle ? authenticate() : '' : ''} value={login.email} onChange={e => setLogin({ ...login, email: e.target.value })} />
-                            {toggle && <input type="password" placeholder='Password' value={login.password} onChange={e => setLogin({ ...login, password: e.target.value })} />}
+                            {!toggle && <input type="password" placeholder='Password' value={login.password} onChange={e => setLogin({ ...login, password: e.target.value })} />}
                             {(loading || loggingIn) && <img width={40} src={loader} alt="" /> }
-                            <button disabled={loading || loggingIn} onClick={toggle ? () => authenticateWithEmailAndPassword() : () => authenticate()}>Login</button>
+                            <button disabled={loading || loggingIn} onClick={!toggle ? () => authenticateWithEmailAndPassword() : () => authenticate()}>{!toggle ? 'Login' : 'Activate'}</button>
                             <div id="gl"></div>
-                            <p>Login with <span onClick={() => setToggle(!toggle)}>{toggle ? 'Email' : "Email and Password"}</span></p>
+                            <p>{!toggle ? 'New user?': 'Already have an account?'} <span onClick={() => setToggle(!toggle)}>{toggle ? 'Login' : "Activate your account"}</span></p>
+                            <p>{msg}</p>
                         </div>
                     </div>
                 </div>

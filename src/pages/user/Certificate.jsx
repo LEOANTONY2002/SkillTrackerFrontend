@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import FileBase64 from "react-file-base64";
+// import FileBase64 from "react-file-base64";
 import "./Certificate.css";
 import Nav from "../../components/Nav";
 import { useAddCertificate } from "../../graphql/mutation/useCertificate";
@@ -10,8 +10,10 @@ import { getUser } from "../../redux/slices/userSlice";
 import { useGetAllPublishers } from "../../graphql/query/useGetAllCertificates";
 import { useNavigate } from "react-router-dom";
 import loader from '../../assets/loader.svg'
+import spinner from '../../assets/spinner.gif'
 import Error from "../../components/Error";
-import { uploadToS3 } from "../../actions/uploadToS3";
+// import { uploadToS3 } from "../../actions/uploadToS3";
+import { uploadToFirebase } from "../../actions/uploadToFirebase";
 
 function Certificate() {
     const { user } = useSelector((state) => state.user);
@@ -31,6 +33,10 @@ function Certificate() {
     })
     const [load, setLoading] = useState(false)
     const [err, setErr] = useState({
+        open: false,
+        msg: ''
+    })
+    const [msg, setMsg] = useState({
         open: false,
         msg: ''
     })
@@ -55,10 +61,20 @@ function Certificate() {
 
     const upload = async () => {
         if (cert.name !== ""  && cert.publisherId && cert.photo !== "") {
-            let p = await uploadToS3(cert.photo)
-            setCert({...cert, photo: p})
-            let { data} = await addCertificate({
-                variables: cert
+            setLoading(true)
+            let url = await uploadToFirebase(user?.email, cert.employeeSkillId, cert.photo)
+            setLoading(false)
+            console.log("LINK", url);
+            let { data } = await addCertificate({
+                variables: {
+                    id: cert.id,
+                    name: cert.name,
+                    publisherId: cert.publisherId,
+                    expiry: cert.expiry,
+                    photo: url,
+                    employeeId: cert.employeeId,
+                    employeeSkillId: cert.employeeSkillId
+                }
             })
             dispatch(getUser(data?.addCertificate));
             setCert({ ...cert, open: false });
@@ -117,7 +133,7 @@ function Certificate() {
 
                     {cert.open && (
                         <div className="u-upl">
-                            <div className="l-body">
+                            <div className="l-body" style={{marginLeft: "-30px"}}>
                                 <img
                                     onClick={() => {
                                         setLoading(false)
@@ -127,22 +143,23 @@ function Certificate() {
                                     alt=""
                                 />
                                 <div>
-                                    <div className="lb-up">
+                                    <div className="lb-up" >
                                         <img
                                             style={
-                                                cert.photo !== ""
-                                                    ? { padding: 0, width: "70px", height: "70px" }
-                                                    : {}
+                                                cert.photo !== "" && typeof cert.photo?.name !== 'string'
+                                                    ? { padding: 0, width: "120px", height: "120px" }
+                                                    : {padding: "20px", width: "100px", height: "100px"}
                                             }
                                             src={
-                                                cert.photo === ""
-                                                    ? "https://img.icons8.com/fluency-systems-regular/72/ffffff/certificate.png"
+                                                cert.photo === "" || typeof cert.photo?.name == 'string'
+                                                    ? "https://img.icons8.com/fluency-systems-regular/140/ffffff/certificate.png"
                                                     : cert.photo
                                             }
-                                            alt=""
+                                            alt=""  
                                         />
                                         <div>
-                                            <FileBase64 onDone={getFiles.bind(this)} />
+                                            {/* <FileBase64 onDone={getFiles.bind(this)} /> */}
+                                            <input type="file" onChange={(e) => getFiles(e.target.files[0])} />
                                             <img src="https://img.icons8.com/fluency-systems-filled/25/fc3737/camera.png" alt=""/>
                                         </div>
                                     </div>
@@ -178,7 +195,13 @@ function Certificate() {
                                     onChange={(e) => setCert({ ...cert, expiry: e.target.value })}
                                 />
                                 {addingCertificate && <div><img style={{width: "40px"}} src={loader} alt="" /></div> }
-                                <button disabled={load} onClick={() => upload()}>Upload</button>
+                                {load && 
+                                    <div style={{display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column"}}>
+                                        <img style={{width: "40px"}} src={spinner} alt="" />
+                                        <span style={{fontSize: "smaller", color: "red"}}>Uploading Certificate...</span>
+                                    </div> 
+                                }
+                                <button disabled={addingCertificate || load} onClick={() => upload()}>Upload</button>
                             </div>
                         </div>
                     )}

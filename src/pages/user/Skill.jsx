@@ -14,7 +14,7 @@ function Skill() {
   const {skills, loading: getttingAllSkills} = useGetAllSkills()
   const [skill, setSkill] = useState({
     open: false,
-    skills: [...user?.employeeSkills],
+    skills: user?.employeeSkills ? [...user?.employeeSkills] : []
   });
   const [err, setErr] = useState({
     open: false,
@@ -29,7 +29,7 @@ function Skill() {
   useEffect(() => {
     setSkill({
       ...skill,
-      skills: [...user?.employeeSkills]
+      skills: user?.employeeSkills ? [...user?.employeeSkills] : []
     })
   }, [user])
 
