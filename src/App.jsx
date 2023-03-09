@@ -35,12 +35,14 @@ function App() {
   }, [admin])
 
   const client = new ApolloClient({
-    uri: 'http://localhost:4001/graphql',
+    uri: 'https://changecx-production.up.railway.app/',
     cache: new InMemoryCache(),
     headers: {
       authorization: accessToken || ""
     }
   });
+
+  // console.log("TOKEN" ,accessToken);
 
   return (
     <>

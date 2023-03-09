@@ -18,7 +18,7 @@ html::-webkit-scrollbar,
 }
 
 .cx {
-  background: linear-gradient(120deg, #fcdfdf, transparent);
+  background: linear-gradient(120deg, #fcdfdf, rgb(255, 248, 248));
   width: max-content;
   padding: 10px;
   border-radius: 50%;

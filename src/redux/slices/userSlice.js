@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 import Cookies from 'js-cookie';
 
-let token = Cookies.get("accessToken")
+let token = Cookies.get("accessToken") || ""
 let user = Cookies.get("user") ? JSON.parse(Cookies.get("user")) : undefined
 
 

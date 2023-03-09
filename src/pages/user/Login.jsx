@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import './Login.css'
 import loader from '../../assets/loader.svg'
 import { getUser, getUserAccessToken } from '../../redux/slices/userSlice';

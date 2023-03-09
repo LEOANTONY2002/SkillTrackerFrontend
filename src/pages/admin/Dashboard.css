@@ -26,9 +26,9 @@
 .dm-cont {
   display: flex;
   align-items: flex-start;
-  justify-content: space-evenly;
+  justify-content: space-between;
   flex-wrap: wrap;
-  flex: 0.75;
+  width: 100%;
 }
 .dm-cont > div {
   display: flex;

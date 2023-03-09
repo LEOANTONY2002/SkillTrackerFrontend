@@ -1,8 +1,13 @@
 import React from 'react'
 import { useState } from 'react'
-import {  useSelector } from 'react-redux'
+import {  useDispatch, useSelector } from 'react-redux'
 import './Profile.css'
 import Nav from '../../components/Nav';
+import { useResetPassword } from '../../graphql/mutation/useLogin';
+import Error from '../../components/Error';
+import loader from '../../assets/loader.svg'
+import { getUser } from '../../redux/slices/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 function Profile() {
     const { user } = useSelector((state) => state.user)
@@ -11,6 +16,44 @@ function Profile() {
         cert: {}
     })
     const [shrink, setShrink] = useState(true)
+    const [newPassword, setNewPassword] = useState({
+        id: "",
+        password: "",
+        confirmPassword: ""
+    })
+    const [err, setErr] = useState({
+        open: false,
+        msg: ''
+    })
+    const [resetPassword, setResetPassword] = useState(false)
+    const { employeePasswordReset, loading: resettingPassword } = useResetPassword();
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    const updateNewPassword = async () => {
+        if (newPassword.password === "" || newPassword.confirmPassword === "") {
+            setErr({
+                open: true,
+                msg: "Fill all the fields!"
+            })
+        } else if (newPassword.password !== newPassword.confirmPassword) {
+            setErr({
+                open: true,
+                msg: "Check password!"
+            }) 
+        } else {
+            const {data} = await employeePasswordReset({variables: newPassword})
+            if (data?.employeePasswordReset !== null) {
+                dispatch(getUser(data?.employeePasswordReset))
+                setResetPassword(false)
+            } else {
+                setErr({
+                    open: true,
+                    msg: "Something went wrong!"
+                }) 
+            }
+        }
+    }
 
     console.log(user)
 
@@ -81,9 +124,43 @@ function Profile() {
                         </div>
                     )}
             </div>
+
+            {resetPassword && 
+                <div className='pw-reset'>
+                    <div className='login'>
+                        <div>
+                            <img
+                                onClick={() => {
+                                    setResetPassword(false)
+                                }}
+                                src="https://img.icons8.com/ios/48/fc3737/delete-sign--v1.png"
+                                alt=""
+                            />
+                            <div className="l-head">
+                                <img src="https://img.icons8.com/material-rounded/40/fc3737/password1.png" alt='' />
+                                <span></span>
+                                <p>Reset Password</p>
+                            </div>
+                            <div className="l-body">
+                                <input type="password" placeholder='New Password' value={newPassword.password} onChange={e => setNewPassword({ ...newPassword, password: e.target.value })} />
+                                <input type="password" placeholder='Confirm Password' value={newPassword.confirmPassword} onChange={e => setNewPassword({ ...newPassword, confirmPassword: e.target.value })} />
+                                {resettingPassword && <img width={40} src={loader} alt="" /> }
+                                <button style={{width: "max-content", padding: "0 15px"}} disabled={resettingPassword} onClick={() => updateNewPassword()}>Change Password</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div className="p-pw-reset" onClick={() => setResetPassword(true)}>
+                <img src="https://img.icons8.com/material-rounded/40/fc3737/password1.png" alt=''/>
+            </div>
+
             <div className="nav-menu">
                 <Nav shrink={shrink} setShrink={setShrink} />
             </div>
+
+            {err.open && <Error err={err} setErr={setErr} />}
         </>
     )
 }

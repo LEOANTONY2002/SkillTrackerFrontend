@@ -46,7 +46,7 @@ function Certificate() {
     const navigate = useNavigate()
     const {publishers: publishers=[], error} = useGetAllPublishers()
 
-    console.log(cert);
+    console.log(user?.employeeSkills);
 
     useEffect(() => {
         if (!user) {
@@ -96,7 +96,7 @@ function Certificate() {
         <>
             <div className="upload">
                 <div className="upl-main">
-                    {user?.employeeSkills?.length !== 0 ?
+                    {user?.employeeSkills !== null && user?.employeeSkills?.length !== 0  ?
                         user?.employeeSkills?.map((es) => (
                             <div key={es?.id} className="u-main">
                                 <div className="u-skill">
@@ -126,10 +126,12 @@ function Certificate() {
                                 )}
                             </div>
                         )) : 
-                        <div>
-                            <p style={{color: "red"}}>No skills found!</p>
+                        <div style={{display: "flex", flexDirection: "column", alignItems: "center", gap: "20px"}}>
+                            <p style={{color: "#fc3737a2"}}>No skills found!</p>
+                            <span>Add New Skills</span>
+                            <img className="go" onClick={() => navigate("/employee/skill")} src="https://img.icons8.com/fluency-systems-filled/48/ffffff/right.png" alt="" />
                         </div>
-                        }
+                    }
 
                     {cert.open && (
                         <div className="u-upl">

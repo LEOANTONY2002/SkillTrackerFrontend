@@ -74,3 +74,48 @@
   display: flex;
   align-items: center;
 }
+
+.pw-reset {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  backdrop-filter: blur(20px);
+  z-index: 20;
+}
+.pw-reset .login > div {
+  padding: 30px;
+  border-radius: 15px;
+  background-color: rgb(255, 244, 244);
+  box-shadow: 0 5px 20px rgba(255, 102, 102, 0.208);
+  position: relative;
+}
+.pw-reset .login > div > img {
+  width: 20px;
+  padding: 7px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: #fee8e8;
+  box-shadow: 0 2px 20px rgba(250, 172, 172, 0.212);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.p-pw-reset {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  border-radius: 50%;
+  box-shadow: 0 5px 20px rgba(255, 102, 102, 0.208);
+  background: linear-gradient(120deg, rgb(255, 242, 242), rgb(255, 231, 221));
+  display: grid;
+  place-content: center;
+  padding: 7px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.p-pw-reset img {
+  width: 25px;
+}

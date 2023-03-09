@@ -240,7 +240,7 @@ function Dashboard() {
                             </Link>
                         </div>
                     </div>
-                    <div className="d-sync">
+                    {/* <div className="d-sync">
                         <p>Sync Employees Data</p>
                         <h5>Last sync: <span>{gettingLastSync ? <img style={{width: "30px", height: "20px", boxShadow: "none", backgroundColor: "transparent", margin: 0, position: "absolute", bottom: "20px"}} src={loader} alt="" /> : lastSync !== "" ? `${getDate(lastSync?.lastSync?.lastSync)}` : ""}</span></h5>
                         <div>
@@ -248,7 +248,7 @@ function Dashboard() {
                             <p>Sync now</p>
                             {syncing && <img style={{width: "30px", boxShadow: "none", backgroundColor: "transparent", margin: 0, position: "absolute", bottom: "20px"}} src={loader} alt="" /> }
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 
                 <div className="d-cats">
