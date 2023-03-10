@@ -102,6 +102,20 @@
   border-bottom: 1px solid #fc3737;
   cursor: pointer;
 }
+.login h6 {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.login h6 p {
+  width: 60px;
+  height: 1px;
+  background-color: lightgray;
+}
+
+.nsm7Bb-HzV7m-LgbsSe {
+  border-color: #fc3737 !important;
+}
 
 @media (max-width: 400px) {
   .l-body input {

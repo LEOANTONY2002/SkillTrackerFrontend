@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import './Login.css'
@@ -8,7 +8,7 @@ import { memo } from 'react';
 import Error from '../../components/Error';
 import { useNavigate } from 'react-router-dom';
 import { useLogin, useLoginWithPassword, useResetPassword } from '../../graphql/mutation/useLogin';
-// import jwtDecode from 'jwt-decode'
+import jwtDecode from 'jwt-decode'
 
 function Login() {
     const { login: onLogin, loading, error: errorLogin } = useLogin();
@@ -35,73 +35,73 @@ function Login() {
 
     console.log(newPassword)
 
-    // useEffect(() => {
-    //     window?.google?.accounts?.id?.initialize({
-    //         client_id: "321676839735-hhjotk4qba88iu9qeinb0g1hdo1akkq2.apps.googleusercontent.com",
-    //         callback: handleCredentialResponse
-    //       });
-    //       window?.google?.accounts?.id?.renderButton(
-    //         document.getElementById("gl"),
-    //         { theme: "outline", size: "large" }  // customization attributes
-    //       );
-    //       window?.google?.accounts?.id?.prompt(); //
-    // }, [])
+    useEffect(() => {
+        window?.google?.accounts?.id?.initialize({
+            client_id: "321676839735-hhjotk4qba88iu9qeinb0g1hdo1akkq2.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+          });
+          window?.google?.accounts?.id?.renderButton(
+            document.getElementById("gl"),
+            { theme: "outline", size: "large" } 
+          );
+          window?.google?.accounts?.id?.prompt(); 
+    }, [])
 
-    // const handleCredentialResponse = async (response) => {
-    //     const decoded = await jwtDecode(response.credential)
-    //     console.log(decoded);
-    //     let email = decoded?.email
-    //     if (email === '' || email === null) {
-    //         setErr({
-    //             open: true,
-    //             msg: "Enter Email!"
-    //         })
-    //     } else if (email.slice(-13) !== "@changecx.com") setErr({
-    //         open: true,
-    //         msg: "Enter Organization Email!"
-    //     })
-    //     else {
-    //         try {
-    //             await onLogin({
-    //                 variables: {
-    //                     email
-    //                 }
-    //             }).then(({ data, error }) => {
-    //                 console.log("EMPLOYEE", data)
-    //                 if (data?.employeeLogin !== null) {
-    //                         dispatch(getUser(data?.employeeLogin))
-    //                         dispatch(getUserAccessToken(data?.employeeLogin?.accessToken || ""))
-    //                         if (data?.employeeLogin?.isAdmin === true) {
-    //                             navigate('/admin')
-    //                         } else {
-    //                             navigate('/employee')
-    //                         }
-    //                         // dispatch(getUserAccessToken(data.accessToken))
-    //                         setLogin({
-    //                             email: "",
-    //                             password: ""
-    //                         })
+    const handleCredentialResponse = async (response) => {
+        const decoded = await jwtDecode(response.credential)
+        console.log(decoded);
+        let email = decoded?.email
+        if (email === '' || email === null) {
+            setErr({
+                open: true,
+                msg: "Enter Email!"
+            })
+        } else if (email.slice(-13) !== "@changecx.com") setErr({
+            open: true,
+            msg: "Use Organization Email!"
+        })
+        else {
+            try {
+                await onLogin({
+                    variables: {
+                        email
+                    }
+                }).then(({ data, error }) => {
+                    console.log("EMPLOYEE", data)
+                    if (data?.employeeLogin !== null) {
+                            dispatch(getUser(data?.employeeLogin))
+                            dispatch(getUserAccessToken(data?.employeeLogin?.accessToken || ""))
+                            if (data?.employeeLogin?.isAdmin === true) {
+                                navigate('/admin')
+                            } else {
+                                navigate('/employee')
+                            }
+                            // dispatch(getUserAccessToken(data.accessToken))
+                            setLogin({
+                                email: "",
+                                password: ""
+                            })
                         
-    //                 } else setErr({ open: true, msg: "Invalid Credentials" })
+                    } else setErr({ open: true, msg: "Invalid Credentials" })
 
-    //                 if (error) {
-    //                     setErr({open: error.message})
-    //                     console.log(error)
-    //                 }
-    //             }).catch(error => {
-    //                 console.log(error)
-    //             })
+                    if (error) {
+                        setErr({open: error.message})
+                        console.log(error)
+                    }
+                }).catch(error => {
+                    console.log(error)
+                })
                     
-    //         } catch ({ response }) {
-    //             setErr({
-    //                 open: true,
-    //                 msg: response?.data || "Invalid Credentials"
-    //             })
-    //         }
-    //     }
-    // }
+            } catch ({ response }) {
+                setErr({
+                    open: true,
+                    msg: response?.data || "Invalid Credentials"
+                })
+            }
+        }
+    }
 
-    const authenticate = async () => {
+    const activateEmployeeAccount = async () => {
         if (login.email === '' || login.email === null) {
             setErr({
                 open: true,
@@ -141,6 +141,57 @@ function Login() {
                     })
                 }
             })
+        }
+    }
+
+    const authenticate = async () => {
+        if (login.email === '' || login.email === null) {
+            setErr({
+                open: true,
+                msg: "Enter Email!"
+            })
+        } else if (login.email.slice(-13) !== "@changecx.com") setErr({
+            open: true,
+            msg: "Enter Organization Email!"
+        })
+        else {
+            try {
+                await onLogin({
+                    variables: {
+                        email: login?.email
+                    }
+                }).then(({ data, error }) => {
+                    console.log("EMPLOYEE", data)
+                    if (data?.employeeLogin !== null) {
+                            dispatch(getUser(data?.employeeLogin))
+                            dispatch(getUserAccessToken(data?.employeeLogin?.accessToken || ""))
+                            if (data?.employeeLogin?.isAdmin === true) {
+                                navigate('/admin')
+                            } else {
+                                navigate('/employee')
+                            }
+                            // dispatch(getUserAccessToken(data.accessToken))
+                            setLogin({
+                                email: "",
+                                password: ""
+                            })
+                        
+                    } else setErr({ open: true, msg: "Invalid Credentials" })
+
+                    if (error) {
+                        setErr({open: error.message})
+                        console.log(error)
+                    }
+                }).catch(error => {
+                    console.log(error)
+                })
+                    
+            } catch ({ response }) {
+                setErr({
+                    open: true,
+                    msg: response?.data || "Invalid Credentials"
+                })
+            }
         }
     }
 
@@ -255,7 +306,8 @@ function Login() {
                             <input type="text" placeholder='Email' onKeyDown={e => e.key === "Enter" ? !toggle ? authenticate() : '' : ''} value={login.email} onChange={e => setLogin({ ...login, email: e.target.value })} />
                             {!toggle && <input type="password" placeholder='Password' value={login.password} onChange={e => setLogin({ ...login, password: e.target.value })} />}
                             {(loading || loggingIn) && <img width={40} src={loader} alt="" /> }
-                            <button disabled={loading || loggingIn} onClick={!toggle ? () => authenticateWithEmailAndPassword() : () => authenticate()}>{!toggle ? 'Login' : 'Activate'}</button>
+                            <button disabled={loading || loggingIn} onClick={!toggle ? () => authenticateWithEmailAndPassword() : () => activateEmployeeAccount()}>{!toggle ? 'Login' : 'Activate'}</button>
+                            <h6><p></p><span>OR</span><p></p></h6>
                             <div id="gl"></div>
                             <p>{!toggle ? 'New user?': 'Already have an account?'} <span onClick={() => setToggle(!toggle)}>{toggle ? 'Login' : "Activate your account"}</span></p>
                             <p>{msg}</p>

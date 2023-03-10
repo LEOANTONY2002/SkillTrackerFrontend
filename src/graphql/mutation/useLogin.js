@@ -1,5 +1,63 @@
 import { gql, useMutation } from "@apollo/client";
 
+
+const ACTIVATE_ACCOUNT = gql`
+        mutation Mutation($email: String!){
+            employeeLogin(email: $email) {
+                accessToken
+                id
+                email
+                name
+                photo
+                jobTitle
+                displayName
+                mobileNumber
+                department
+                isAdmin
+                isNewEmployee
+                division
+                location
+                employeeSkills {
+                    id
+                    employeeId
+                    level
+                    skillId
+                    updatedAt
+                    skill {
+                        id
+                        skill {
+                        name
+                        id
+                        }
+                        category {
+                        name
+                        id
+                        }
+                        updatedAt
+                    }
+                    certificate {
+                        id
+                        name
+                        photo
+                        publisher {
+                            id
+                            name
+                        }
+                        expiry
+                        createdAt
+                        updatedAt
+                    }
+                }
+            }
+        }
+    `;
+
+
+export const useActivateAccount = () => {
+    const [activateAccount, { loading, data, error }] = useMutation(ACTIVATE_ACCOUNT);
+    return { activateAccount, loading, data, error }
+}
+
 const GET_EMPLOYEE = gql`
         mutation Mutation($email: String!){
             employeeLogin(email: $email) {
