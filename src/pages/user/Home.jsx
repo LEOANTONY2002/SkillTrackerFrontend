@@ -10,7 +10,8 @@ function Home() {
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (!user) navigate("/employee/login")
+        console.log(user);
+        if (user?.length === 0) navigate("/employee/login")
     }, [])
 
     return (
