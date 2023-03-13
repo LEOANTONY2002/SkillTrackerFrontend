@@ -104,13 +104,14 @@
 }
 .p-pw-reset {
   position: fixed;
+  width: 90vw;
   bottom: 15px;
-  left: 15px;
+  left: 0;
   border-radius: 50%;
-  box-shadow: 0 5px 20px rgba(255, 102, 102, 0.208);
-  background: linear-gradient(120deg, rgb(255, 242, 242), rgb(255, 231, 221));
-  display: grid;
-  place-content: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 7px;
   cursor: pointer;
   z-index: 10;
@@ -118,4 +119,12 @@
 
 .p-pw-reset img {
   width: 25px;
+  padding: 10px;
+  border-radius: 50%;
+  box-shadow: 0 5px 20px rgba(255, 102, 102, 0.208);
+  background: linear-gradient(120deg, rgb(255, 242, 242), rgb(255, 231, 221));
+}
+
+.p-pw-reset img:first-of-type {
+  margin-left: 5vw;
 }

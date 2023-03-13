@@ -3,7 +3,7 @@ import { gql, useMutation } from "@apollo/client";
 
 const ACTIVATE_ACCOUNT = gql`
         mutation Mutation($email: String!){
-            employeeLogin(email: $email) {
+            activateAccount(email: $email) {
                 accessToken
                 id
                 email

@@ -6,8 +6,10 @@ import Nav from '../../components/Nav';
 import { useResetPassword } from '../../graphql/mutation/useLogin';
 import Error from '../../components/Error';
 import loader from '../../assets/loader.svg'
+import logoutIcon from '../../assets/logout.png'
 import { getUser } from '../../redux/slices/userSlice';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 function Profile() {
     const { user } = useSelector((state) => state.user)
@@ -53,6 +55,13 @@ function Profile() {
                 }) 
             }
         }
+    }
+
+    const logout = async () => {
+        Cookies.remove("user")
+        Cookies.remove("accessToken")
+        navigate("/employee/login")
+        getUser([])
     }
 
     console.log(user)
@@ -152,8 +161,9 @@ function Profile() {
                 </div>
             }
 
-            <div className="p-pw-reset" onClick={() => setResetPassword(true)}>
-                <img src="https://img.icons8.com/material-rounded/40/fc3737/password1.png" alt=''/>
+            <div className="p-pw-reset">
+                <img  onClick={() => setResetPassword(true)} src="https://img.icons8.com/material-rounded/40/fc3737/password1.png" alt=''/>
+                <img onClick={() => logout()} src={logoutIcon} alt=''/>
             </div>
 
             <div className="nav-menu">
