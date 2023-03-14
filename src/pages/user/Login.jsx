@@ -135,8 +135,8 @@ function Login() {
           },
         });
         if (!errorActivateAccount) {
-          if (ActivatedAccount?.employeeLogin !== null) {
-            if (ActivatedAccount?.employeeLogin?.isNewEmployee === true) {
+          if (ActivatedAccount?.activateAccount !== null) {
+            if (ActivatedAccount?.activateAccount?.isNewEmployee === true) {
               setToggle(!toggle);
               setMsg("One Time Password has been sent to your email");
             }
