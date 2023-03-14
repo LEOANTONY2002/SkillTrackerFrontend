@@ -54,6 +54,7 @@ function Login() {
   console.log(newPassword);
 
   useEffect(() => {
+    setMsg("");
     window?.google?.accounts?.id?.initialize({
       client_id:
         "321676839735-hhjotk4qba88iu9qeinb0g1hdo1akkq2.apps.googleusercontent.com",
@@ -134,12 +135,12 @@ function Login() {
             email: login.email,
           },
         });
-        if (!errorActivateAccount) {
-          if (ActivatedAccount?.activateAccount !== null) {
-            if (ActivatedAccount?.activateAccount?.isNewEmployee === true) {
-              setToggle(!toggle);
-              setMsg("One Time Password has been sent to your email");
-            }
+        if (ActivatedAccount?.activateAccount !== null) {
+          if (ActivatedAccount?.activateAccount?.isNewEmployee === true) {
+            setToggle(!toggle);
+            setMsg(
+              "One Time Password has been sent to your email. Please login with that password"
+            );
           }
         }
       } catch (err) {
@@ -386,7 +387,11 @@ function Login() {
                   {toggle ? "Login" : "Activate your account"}
                 </span>
               </p>
-              <p>{msg}</p>
+              <p
+                style={{ color: "#fc3737a3", maxWidth: "90vw", margin: "auto" }}
+              >
+                {msg}
+              </p>
             </div>
           </div>
         </div>
