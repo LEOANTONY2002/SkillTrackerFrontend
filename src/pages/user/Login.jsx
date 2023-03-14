@@ -14,6 +14,8 @@ import {
   useResetPassword,
 } from "../../graphql/mutation/useLogin";
 import jwtDecode from "jwt-decode";
+import iEmpsW from "../../assets/iEmpsW.png";
+import iEmpsR from "../../assets/iEmpsR.png";
 
 function Login() {
   const { login: onLogin, loading, error: errorLogin } = useLogin();
@@ -54,10 +56,11 @@ function Login() {
   useEffect(() => {
     window?.google?.accounts?.id?.initialize({
       client_id:
-        "676911544232-gcfnr9pqlotfvtkoak2jlh77r5l0mtrl.apps.googleusercontent.com",
+        "321676839735-hhjotk4qba88iu9qeinb0g1hdo1akkq2.apps.googleusercontent.com",
       callback: handleCredentialResponse,
     });
-    //321676839735-hhjotk4qba88iu9qeinb0g1hdo1akkq2.apps.googleusercontent.com
+    //dev - 321676839735-hhjotk4qba88iu9qeinb0g1hdo1akkq2.apps.googleusercontent.com
+    //prod - 321676839735-hhjotk4qba88iu9qeinb0g1hdo1akkq2.apps.googleusercontent.com
     window?.google?.accounts?.id?.renderButton(document.getElementById("gl"), {
       theme: "outline",
       size: "large",
@@ -293,10 +296,7 @@ function Login() {
         <div className="login">
           <div>
             <div className="l-head">
-              <img
-                src="https://img.icons8.com/fluency-systems-regular/48/fc3737/group-background-selected.png"
-                alt=""
-              />
+              <img src={iEmpsR} alt="" />
               <span></span>
               <p>Reset Password</p>
             </div>
@@ -334,19 +334,13 @@ function Login() {
         <div className="login">
           <div>
             <div className="l-head">
-              <img
-                src="https://img.icons8.com/fluency-systems-regular/48/fc3737/group-background-selected.png"
-                alt=""
-              />
+              <img src={iEmpsR} alt="" />
               <span></span>
               <p>Employee</p>
             </div>
             <div className="l-body">
               <div className="lb-up">
-                <img
-                  src="https://img.icons8.com/fluency-systems-regular/90/ffffff/group-background-selected.png"
-                  alt=""
-                />
+                <img src={iEmpsW} alt="" />
               </div>
               <input
                 type="text"
