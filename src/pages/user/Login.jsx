@@ -135,14 +135,16 @@ function Login() {
             email: login.email,
           },
         });
-        if (ActivatedAccount?.activateAccount !== null) {
-          if (ActivatedAccount?.activateAccount?.isNewEmployee === true) {
-            setToggle(!toggle);
-            setMsg(
-              "One Time Password has been sent to your email. Please login with that password"
-            );
+        setTimeout(() => {
+          if (ActivatedAccount?.activateAccount !== null) {
+            if (ActivatedAccount?.activateAccount?.isNewEmployee === true) {
+              setToggle(!toggle);
+              setMsg(
+                "One Time Password has been sent to your email. Please login with that password"
+              );
+            }
           }
-        }
+        }, 100);
       } catch (err) {
         setErr({
           open: true,
