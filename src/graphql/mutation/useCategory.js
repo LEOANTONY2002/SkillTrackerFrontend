@@ -6,25 +6,25 @@ export const ADD_CATEGORY = gql`
             id
             name
             skills {
-            id
-            skill {
-                name
-            }
-            employeeSkills {
                 id
-                level
-                employee {
-                name
-                email
-                }
-                certificate {
-                name
-                publisher {
-                    id
+                skill {
                     name
                 }
+                employeeSkills {
+                    id
+                    level
+                    employee {
+                        name
+                        email
+                        }
+                        certificate {
+                        name
+                        publisher {
+                            id
+                            name
+                        }
+                    }
                 }
-            }
             }
         }
     }

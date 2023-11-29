@@ -35,7 +35,7 @@ function App() {
   }, [admin]);
 
   const client = new ApolloClient({
-    uri: "https://changecx-production.up.railway.app/",
+    uri: "https://ccxskill.onrender.com/",
     cache: new InMemoryCache(),
     headers: {
       authorization: accessToken || "",

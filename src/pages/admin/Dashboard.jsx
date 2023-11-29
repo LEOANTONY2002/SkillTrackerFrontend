@@ -96,7 +96,6 @@ function Dashboard() {
     ],
     options: {
       chart: {
-        height: 150,
         type: "area",
         zoom: {
           enabled: true,
@@ -131,6 +130,10 @@ function Dashboard() {
       },
       xaxis: {
         categories: [...categories?.slice(0, 5)?.map((c) => c?.name)],
+        labels: {
+          show: true,
+          hideOverlappingLabels: true,
+        },
       },
       yaxis: {
         min: 1,
@@ -153,7 +156,6 @@ function Dashboard() {
     ],
     options: {
       chart: {
-        height: 150,
         type: "area",
         zoom: {
           enabled: true,
@@ -273,15 +275,6 @@ function Dashboard() {
                 </Link>
               </div>
             </div>
-            {/* <div className="d-sync">
-                        <p>Sync Employees Data</p>
-                        <h5>Last sync: <span>{gettingLastSync ? <img style={{width: "30px", height: "20px", boxShadow: "none", backgroundColor: "transparent", margin: 0, position: "absolute", bottom: "20px"}} src={loader} alt="" /> : lastSync !== "" ? `${getDate(lastSync?.lastSync?.lastSync)}` : ""}</span></h5>
-                        <div>
-                            <img onClick={() => sync()} src="https://img.icons8.com/fluency-systems-regular/48/ffffff/synchronize.png" alt='' />
-                            <p>Sync now</p>
-                            {syncing && <img style={{width: "30px", boxShadow: "none", backgroundColor: "transparent", margin: 0, position: "absolute", bottom: "20px"}} src={loader} alt="" /> }
-                        </div>
-                    </div> */}
           </div>
 
           <div className="d-cats">
@@ -336,7 +329,6 @@ function Dashboard() {
                   options={chartData2.options}
                   series={chartData2.series}
                   type="area"
-                  height={"100%"}
                 />
               </div>
             </div>
