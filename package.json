@@ -12,6 +12,7 @@
     "aws-sdk": "^2.1328.0",
     "axios": "^1.3.4",
     "buffer": "^6.0.3",
+    "client": "file:",
     "date-fns": "^2.29.3",
     "firebase": "^9.17.2",
     "graphql": "^16.6.0",

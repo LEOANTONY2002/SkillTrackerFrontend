@@ -214,52 +214,46 @@ function Login() {
         open: true,
         msg: "Enter Email!",
       });
-    } else if (login.email.slice(-13) !== "@changecx.com")
-      setErr({
-        open: true,
-        msg: "Enter Organization Email!",
+    } else {
+      // try {
+      const { data, errors } = await loginWithPassword({
+        variables: login,
       });
-    else {
-      try {
-        loginWithPassword({
-          variables: login,
-        })
-          .then(({ data, error }) => {
-            console.log("EMPLOYEE", data);
-            if (data?.employeeLoginWithPassword !== null) {
-              if (data?.employeeLoginWithPassword?.isNewEmployee) {
-                setNewPassword({
-                  ...newPassword,
-                  id: data?.employeeLoginWithPassword?.id,
-                });
-                setResetPassword(true);
-              } else {
-                dispatch(getUser(data?.employeeLoginWithPassword));
-                dispatch(
-                  getUserAccessToken(
-                    data?.employeeLoginWithPassword?.accessToken
-                  )
-                );
-                if (data?.employeeLoginWithPassword?.isAdmin === true) {
-                  navigate("/admin");
-                } else {
-                  navigate("/employee");
-                }
-              }
-            }
-          })
-          .catch((error) => {
-            setErr({
-              open: true,
-              msg: error.message,
-            });
-          });
-      } catch (error) {
+      console.log("EMPLOYEE", errors);
+      if (errors) {
+        console.log("EMPLOYEE", errors);
+
         setErr({
           open: true,
-          msg: error.message,
+          msg: errors.message,
         });
+      } else if (data?.employeeLoginWithPassword !== null) {
+        if (data?.employeeLoginWithPassword?.isNewEmployee) {
+          setNewPassword({
+            ...newPassword,
+            id: data?.employeeLoginWithPassword?.id,
+          });
+          setResetPassword(true);
+        } else {
+          dispatch(getUser(data?.employeeLoginWithPassword));
+          dispatch(
+            getUserAccessToken(data?.employeeLoginWithPassword?.accessToken)
+          );
+          if (data?.employeeLoginWithPassword?.isAdmin === true) {
+            navigate("/admin");
+          } else {
+            navigate("/employee");
+          }
+        }
       }
+      // } catch (error) {
+      //   console.log("err", error);
+
+      //   setErr({
+      //     open: true,
+      //     msg: error.message,
+      //   });
+      // }
     }
   };
 
