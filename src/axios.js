@@ -1,5 +1,5 @@
 import axios from 'axios'
 
 export const Axios = axios.create({
-    baseURL: 'https://skilltraker.onrender.com/graphql'
+    baseURL: 'https://ccxskill.onrender.com/graphql'
 })
