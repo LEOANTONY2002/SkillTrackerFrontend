@@ -35,12 +35,14 @@ function App() {
   }, [admin]);
 
   const client = new ApolloClient({
-    uri: "https://ccxskill.onrender.com/",
+    uri: "http://localhost:4001/graphql",
     cache: new InMemoryCache(),
     headers: {
       authorization: accessToken || "",
     },
   });
+
+  //https://ccxskill.onrender.com/
 
   // console.log("TOKEN" ,accessToken);
 

@@ -75,6 +75,33 @@
   align-items: center;
 }
 
+.ep-rec {
+  width: 80vw;
+  margin: auto;
+  margin-bottom: 200px;
+}
+
+.ep-rec > h5 {
+  font-size: smaller;
+  color: #ff815a;
+  display: flex;
+  align-items: center;
+}
+.ep-rec > h5 span {
+  height: 1px;
+  width: 100px;
+  margin-left: 10px;
+  background: linear-gradient(90deg, rgb(255, 45, 45), transparent);
+}
+
+.ep-rec > main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+
 .pw-reset {
   width: 100vw;
   height: 100vh;
@@ -105,16 +132,15 @@
 .p-pw-reset {
   position: fixed;
   width: 90vw;
-  bottom: 15px;
+  bottom: 50px;
   left: 0;
   border-radius: 50%;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 7px;
   cursor: pointer;
-  z-index: 10;
+  z-index: 0;
 }
 
 .p-pw-reset img {
