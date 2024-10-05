@@ -51,7 +51,7 @@ function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  console.log(newPassword);
+  console.log(login);
 
   useEffect(() => {
     setMsg("");
@@ -212,7 +212,7 @@ function Login() {
     if (login.email === "" || login.password === "") {
       setErr({
         open: true,
-        msg: "Enter Email!",
+        msg: "Fill all the fields!",
       });
     } else {
       // try {
