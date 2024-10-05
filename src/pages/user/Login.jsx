@@ -215,17 +215,27 @@ function Login() {
         msg: "Fill all the fields!",
       });
     } else {
-      // try {
+      try {
       const { data, errors } = await loginWithPassword({
         variables: login,
       });
-      console.log("EMPLOYEE", errors);
+      console.log("EMPLOYEE ERR", errors);
+      console.log("EMPLOYEE DATA", data);
+
+      if (!data) {
+        setErr({
+          open: true,
+          msg: "Invalid Credentials!"
+        })
+      }
+
+
       if (errors) {
         console.log("EMPLOYEE", errors);
 
         setErr({
           open: true,
-          msg: errors.message,
+          msg: errors[0].message ,
         });
       } else if (data?.employeeLoginWithPassword !== null) {
         if (data?.employeeLoginWithPassword?.isNewEmployee) {
@@ -246,14 +256,14 @@ function Login() {
           }
         }
       }
-      // } catch (error) {
-      //   console.log("err", error);
+      } catch (error) {
+        console.log("err", error);
 
-      //   setErr({
-      //     open: true,
-      //     msg: error.message,
-      //   });
-      // }
+        setErr({
+          open: true,
+          msg: error.message,
+        });
+      }
     }
   };
 

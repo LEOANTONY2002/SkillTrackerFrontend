@@ -35,7 +35,7 @@ function App() {
   }, [admin]);
 
   const client = new ApolloClient({
-    uri: "https://ccxskill.onrender.com/graphql",
+    uri: "https://skilltrackerserver.onrender.com/graphql",
     cache: new InMemoryCache(),
     headers: {
       authorization: accessToken || "",
